@@ -1,0 +1,32 @@
+dist: trusty
+sudo: required
+language: python
+
+services:
+- docker
+
+python:
+- 3.4
+- 3.5
+- 3.5-dev
+- 3.6
+- 3.6-dev
+- 3.7-dev
+- nightly
+
+before_install:
+- cd ${TRAVIS_BUILD_DIR}
+
+install:
+- pip install --upgrade setuptools
+- pip install .
+- pip install coveralls pytest pytest-runner pycodestyle
+
+script:
+- pycodestyle --max-line-length=80 *.py tests/*.py
+- pytest
+
+after_success:
+- coveralls
+
+deploy:
