@@ -47,11 +47,5 @@ class TestOneVoxel(TestCase):
         stdout = self.run_command_test(command)
         self.assertTrue(os.path.exists('test/output.nii.gz'))
         ndiff = self.n_voxels_diff(input_image, output_image)
-        print("Found {} voxels with differences".format(ndiff))
-        count = 0
-        for line in stdout.strip().split(os.linesep):
-                print(line)
-                if int(line) > 50:
-                        count += 1
-        self.assertTrue(ndiff == count)
+        self.assertTrue(ndiff == 2)
         os.remove(output_image)

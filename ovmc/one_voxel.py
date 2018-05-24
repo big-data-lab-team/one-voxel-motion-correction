@@ -26,43 +26,38 @@ def main():
 
     shape = im.header.get_data_shape()
     assert(len(shape) == 4 or len(shape) == 3)
-
     xdim = shape[0]
     ydim = shape[1]
     zdim = shape[2]
-    tdim = 0
+    tdim = 1
     if (len(shape) == 4):
         tdim = shape[3]
 
     data = im.get_data()
-
     margin = 15  # half the size of the bounding box to use to pick a voxel
-    if tdim != 0:
-        for t in range(0, tdim):
-            if not args.random:
-                x = xdim/2
-                y = ydim/2
-                z = zdim/2
-            else:
-                x = get_randint(xdim, margin)
-                y = get_randint(ydim, margin)
-                z = get_randint(zdim, margin)
-                while(data[x][y][z][t]==0):
-                    x = get_randint(xdim, margin)
-                    y = get_randint(ydim, margin)
-                    z = get_randint(zdim, margin)
-            print(data[x][y][z][t])  # used in the test
-            data[x][y][z][t] = round(data[x][y][z][t]*1.01)
-    else:
-        if not args.random:
-            x = xdim/2
-            y = ydim/2
-            z = zdim/2
-        else:
+    for t in range(0, tdim):
+        x = xdim/2
+        y = ydim/2
+        z = zdim/2
+        if args.random:
             x = get_randint(xdim, margin)
             y = get_randint(ydim, margin)
             z = get_randint(zdim, margin)
-        data[x][y][z] = round(data[x][y][z]*1.01)
+            while(data[x][y][z][t] == 0):
+                x = get_randint(xdim, margin)
+                y = get_randint(ydim, margin)
+                z = get_randint(zdim, margin)
+        if tdim == 1:
+            value = data[x][y][z]
+        else:
+            value = data[x][y][z][t]
+        new_value = round(value*1.01)
+        if value == new_value:
+            new_value += 1
+        if tdim == 1:
+            data[x][y][z] = new_value
+        else:
+            data[x][y][z][t] = new_value
 
     im.to_filename(args.output_file)
 
