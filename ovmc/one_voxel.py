@@ -30,6 +30,7 @@ def main():
     ydim = shape[1]
     zdim = shape[2]
     tdim = 1
+
     if (len(shape) == 4):
         tdim = shape[3]
 

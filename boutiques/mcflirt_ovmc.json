@@ -1,0 +1,36 @@
+{
+    "command-line": "mcflirt_ovmc [DATASET]",
+    "container-image": {
+        "image": "bigdatalabteam/ovmc:latest",
+        "index": "docker://",
+        "type": "singularity"
+    },
+    "description": "mcflirt motion estimation as used in ovmc experiment.",
+    "inputs": [
+        {
+            "id": "dataset",
+            "name": "The fMRI sequence to process",
+            "type": "File",
+            "value-key": "[DATASET]"
+        }
+    ],
+    "name": "mcflirt-ovmc",
+    "output-files": [
+        {
+            "id": "par_file"",
+            "name": "Parameter file produced by mcflirt",
+            "optional": false,
+            "path-template": "[DATASET]_mcflirt.par",
+            "path-template-stripped-extensions": [
+                ".nii", ".gz", ".nii.gz"
+            ]
+        }
+    ],
+    "schema-version": "0.5",
+    "tags": {
+        "foo": "bar",
+        "purpose": "testing",
+        "status": "example"
+    },
+    "tool-version": "v0.1.0"
+}

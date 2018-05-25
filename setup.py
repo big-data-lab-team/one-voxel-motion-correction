@@ -3,7 +3,7 @@ from setuptools import setup
 import sys
 
 VERSION = "0.1"
-DEPS = ["nibabel"]
+DEPS = ["nibabel", "boutiques"]
 
 setup(name="ovmc",
       version=VERSION,
@@ -34,6 +34,7 @@ setup(name="ovmc",
       entry_points={
         "console_scripts": [
             "one_voxel=ovmc:one_voxel",
+            "mcflirt_ovmc=ovmc:mcflirt_ovmc",
         ]
       },
       zip_safe=False)
