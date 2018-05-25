@@ -16,4 +16,5 @@ class TestMcFlirt(TestCase):
 
 
     def test_mcflirt(self):
-        bosh.test("boutiques/mcflirt_ovmc.json")
+        self.assertFalse(bosh(["test", "boutiques/mcflirt_ovmc.json"]))
+	
