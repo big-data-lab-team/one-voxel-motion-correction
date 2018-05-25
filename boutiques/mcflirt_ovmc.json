@@ -17,7 +17,7 @@
     "name": "mcflirt-ovmc",
     "output-files": [
         {
-            "id": "par_file"",
+            "id": "par_file",
             "name": "Parameter file produced by mcflirt",
             "optional": false,
             "path-template": "[DATASET]_mcflirt.par",
@@ -26,11 +26,27 @@
             ]
         }
     ],
+    "tests": [
+        {
+            "name": "test-mcflirt-ovmc",
+            "invocation": {
+                "dataset": "/test/test.nii.gz"
+            },
+            "assertions": {
+                "exit-code": 0,
+                "output-files": [ {
+                        "id": "par_file",
+                        "md5-reference": "0b3cb6406ac8ec34042ae2c7a480dba6"
+                    }
+                ]
+            }
+        }
+    ],
     "schema-version": "0.5",
     "tags": {
-        "foo": "bar",
-        "purpose": "testing",
-        "status": "example"
+        "purpose": "experiment",
+        "modality": "fmri",
+        "pipeline": "motion-estimation"
     },
-    "tool-version": "v0.1.0"
+    "tool-version": "0.1"
 }
