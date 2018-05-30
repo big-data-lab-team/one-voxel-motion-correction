@@ -1,4 +1,4 @@
-from simexp/minc-toolkit
+from simexp/niak-cog
 
 RUN apt-get install -y\
   python-setuptools python-dev &&\
