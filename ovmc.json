@@ -1,5 +1,5 @@
 {
-    "command-line": "ovmc mcflirt [DATASET] [OUTPUT_FILE_NAME]",
+    "command-line": "ovmc [ALGORITHM] [DATASET] [OUTPUT_FILE_NAME]",
     "container-image": {
         "image": "bigdatalabteam/ovmc:latest",
         "type": "docker"
@@ -17,6 +17,13 @@
             "name": "Output file name",
             "type": "String",
             "value-key": "[OUTPUT_FILE_NAME]"
+        },
+        {
+            "id": "algorithm",
+            "name": "Motion estimation algorithm",
+            "type": "String",
+            "value-key": "[ALGORITHM]",
+            "value-choices": ["mcflirt", "mcflirt_fudge", "niaklike", "niaklike_no_chained_init", "spm"]
         }
     ],
     "name": "mcflirt-ovmc",

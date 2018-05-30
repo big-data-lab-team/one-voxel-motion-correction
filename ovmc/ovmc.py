@@ -8,6 +8,7 @@ import logging
 from logging import info
 from logging import error
 import transfo_utils as tu
+from one_voxel import main as ov
 import tempfile
 
 
@@ -55,7 +56,7 @@ def extract_mnc_volume(func_name, func_image_mnc, i):
 def niaklike(dataset, output_file_name, chained_init=True):
 
     # Convert dataset to mnc
-    func_name = output_file_name.replace('.nii', '').replace('.gz', '')
+    func_name = dataset.replace('.nii', '').replace('.gz', '')
     func_image_mnc = func_name + ".mnc"
     if not os.path.exists(func_image_mnc):
         func_image_nii = func_name + '.nii'
@@ -137,6 +138,71 @@ def check_file(parser, x):
     parser.error("File does not exist: {}".format(x))
 
 
+def write_average(param_files, average_param_file):
+    average_transfos = None
+    n_vols = -1
+    n_iterations = 0
+    for param_file in param_files:
+        transfos = {}
+        with open(param_file) as f:
+            param_file_transfos = f.readlines()
+        for param_file_transfo in param_file_transfos:
+            if param_file_transfo == "":
+                continue
+            n_iterations += 1
+            a = param_file_transfo.split(" ")
+            assert(len(a) == 6)
+            transfos.append(float(a[0]),
+                            float(a[1]),
+                            float(a[2]),
+                            float(a[3]),
+                            float(a[4]),
+                            float(a[5]))
+        if n_vols == -1:
+            n_vols = len(transfos)
+        assert(len(transfos) == n_vols)
+        if average_transfos is None:
+            average_transfos = transfos
+        else:
+            for i in range(0, n_vols):
+                for j in range(0, 6):
+                    average_transfos[i][j] += transfos[i][j]
+    for i in range(0, n_vols):
+        for j in range(0, 6):
+            average_transfos[i][j] /= n_iterations
+    with open(average_param_file, 'w') as f:
+        for t in average_transfos:
+            f.write("{} {} {} {} {} {}{}".format(t[0],
+                                                 t[1],
+                                                 t[2],
+                                                 t[3],
+                                                 t[4],
+                                                 t[5],
+                                                 os.linesep))
+
+
+def bootstrap_algo(algorithms, algo_name, n_samples,
+                   dataset, output_name):
+    func_name = dataset.replace('.nii', '').replace('.gz', '')
+    output_files = []
+    for n in range(0, n_samples):
+        info("Iteration {}".format(n))
+
+        # Add noise to functional image
+        noised_image = "{}-iter-{}.nii.gz".format(func_name, n)
+        ov("{} {} --random".format(dataset, noised_image))
+        assert(os.path.exists(noised_image))
+
+        # Run the motion estimation
+        output_transfo_file = "{}_iter_{}.par".format(output_name, n)
+        algorithms[algo_name](noised_image, output_transfo_file)
+        output_files.add(output_transfo_file)
+
+        # Compute partial average
+        output_transfo_file = "{}_average_{}.par"
+        write_average(output_files, output_transfo_file)
+
+
 def main():
     parser = argparse.ArgumentParser(
                description="Process the dataset (fMRI"
@@ -148,13 +214,17 @@ def main():
                                  "niaklike", "niaklike_no_chained_init", "spm"])
     parser.add_argument("dataset", help="fMRI dataset to process.",
                         type=lambda x: check_file(parser, x))
+    parser.add_argument("--bootstrap", help="Runs an one-voxel experiment"
+                                            " with the specified number "
+                                            "of bootstrap samples.",
+                        action="store")
     parser.add_argument("spm_path", help="Path to SPM12 installation,"
                         " used by spm algorithm.",
                         type=lambda x: check_file(parser, x))
-    parser.add_argument("output_file", help="Output file where the "
-                        "transformation parameters (tx, ty, tz, rx, ry,"
-                        " rz) will be written.",
-                        type=lambda x: check_file(parser, x))
+    parser.add_argument("output_name", help="Output file name. .par files "
+                        "containing transformation parameters "
+                        "(tx, ty, tz, rx, ry,"
+                        " rz) will be written for every bootstrap iteration.")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO,
                         format='INFO:%(asctime)s %(message)s')
@@ -165,7 +235,11 @@ def main():
         "niaklike_no_chained_init": niaklike_no_chained_init,
         "spm": spm
     }
-    algorithms[args.algorithm](args.dataset, args.output_file)
+    if args.boostrap:
+        bootstrap_algo(algorithms, args.algorithm,
+                       args.bootstrap, args.dataset, args.output_name)
+    else:
+        algorithms[args.algorithm](args.dataset, args.output_name+".par")
 
 
 if __name__ == '__main__':
