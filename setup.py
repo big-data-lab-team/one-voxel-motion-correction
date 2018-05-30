@@ -34,7 +34,7 @@ setup(name="ovmc",
       entry_points={
         "console_scripts": [
             "one_voxel=ovmc:one_voxel",
-            "mcflirt_ovmc=ovmc:mcflirt_ovmc",
+            "ovmc=ovmc:ovmc",
         ]
       },
       zip_safe=False)

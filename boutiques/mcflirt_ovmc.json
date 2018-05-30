@@ -1,9 +1,8 @@
 {
-    "command-line": "mcflirt_ovmc [DATASET]",
+    "command-line": "ovmc mcflirt [DATASET] [OUTPUT_FILE_NAME]",
     "container-image": {
         "image": "bigdatalabteam/ovmc:latest",
-        "index": "docker://",
-        "type": "singularity"
+        "type": "docker"
     },
     "description": "mcflirt motion estimation as used in ovmc experiment.",
     "inputs": [
@@ -12,6 +11,12 @@
             "name": "The fMRI sequence to process",
             "type": "File",
             "value-key": "[DATASET]"
+        },
+        {
+            "id": "output_file_name",
+            "name": "Output file name",
+            "type": "String",
+            "value-key": "[OUTPUT_FILE_NAME]"
         }
     ],
     "name": "mcflirt-ovmc",
@@ -20,10 +25,7 @@
             "id": "par_file",
             "name": "Parameter file produced by mcflirt",
             "optional": false,
-            "path-template": "[DATASET]_mcflirt.par",
-            "path-template-stripped-extensions": [
-                ".nii", ".gz", ".nii.gz"
-            ]
+            "path-template": "[OUTPUT_FILE_NAME]"
         }
     ],
     "tests": [
