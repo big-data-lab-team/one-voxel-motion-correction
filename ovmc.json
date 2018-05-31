@@ -26,11 +26,11 @@
             "value-choices": ["mcflirt", "mcflirt_fudge", "niaklike", "niaklike_no_chained_init", "spm"]
         }
     ],
-    "name": "mcflirt-ovmc",
+    "name": "ovmc",
     "output-files": [
         {
             "id": "par_file",
-            "name": "Parameter file produced by mcflirt",
+            "name": "Parameter file produced by motion correction",
             "optional": false,
             "path-template": "[OUTPUT_FILE_NAME]"
         }
@@ -39,6 +39,8 @@
         {
             "name": "test-mcflirt-ovmc",
             "invocation": {
+                "algorithm": "mcflirt",
+                "output_file_name": "transformations",
                 "dataset": "/test/test.nii.gz"
             },
             "assertions": {
