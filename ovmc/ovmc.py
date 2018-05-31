@@ -7,8 +7,8 @@ import shutil
 import logging
 from logging import info
 from logging import error
-import transfo_utils as tu
-from one_voxel import main as ov
+from ovmc import transfo_utils as tu
+from ovmc import one_voxel as ov
 import tempfile
 
 

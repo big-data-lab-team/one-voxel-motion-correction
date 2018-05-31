@@ -1,7 +1,7 @@
 {
     "command-line": "ovmc [ALGORITHM] [DATASET] [OUTPUT_FILE_NAME]",
     "container-image": {
-        "image": "bigdatalabteam/ovmc:latest",
+        "image": "bigdatalabteam/one-voxel-motion-correction:latest",
         "type": "docker"
     },
     "description": "mcflirt motion estimation as used in ovmc experiment.",
