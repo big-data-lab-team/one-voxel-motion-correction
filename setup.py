@@ -3,7 +3,7 @@ from setuptools import setup
 import sys
 
 VERSION = "0.1"
-DEPS = ["nibabel", "boutiques"]
+DEPS = ["nibabel", "boutiques", "termcolor"]
 
 setup(name="ovmc",
       version=VERSION,

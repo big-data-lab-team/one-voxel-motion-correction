@@ -5,11 +5,12 @@ import argparse
 import os
 import shutil
 import logging
+import tempfile
+import transfo_utils as tu
 from logging import info
 from logging import error
-import transfo_utils as tu
+from termcolor import colored
 from one_voxel import main as ov
-import tempfile
 
 
 def run_command(command):
@@ -19,9 +20,9 @@ def run_command(command):
                                stderr=subprocess.PIPE)
     (stdout, stderr) = process.communicate()
     if stdout.strip() != "":
-        print(stdout.decode("utf-8"))
+        print(colored(stdout.decode("utf-8"), "green"))
     if stderr.strip() != "":
-        print(stderr.decode("utf-8"))
+        print(colored(stderr.decode("utf-8"), "red"))
     if process.returncode != 0:
         raise Exception("Command failed (return"
                         " code was {})".format(process.returncode))
@@ -41,15 +42,16 @@ def spm(dataset, output_file_name):
     script_file.write(template_string)
     script_file.close()
     run_command("octave {}".format(script_file.name))
-    # Put the results in the right format
+    # TODO Put the results in the right format
     assert(os.path.exists(output_file_name))
     os.unlink(script_file)
 
 
 def extract_mnc_volume(func_name, func_image_mnc, i):
     vol_name = "{}_vol_{}.mnc".format(func_name, i)
-    run_command("mincreshape -clobber -dimrange time={} {} {}"
-                .format(i, func_image_mnc, vol_name))
+    if not os.path.exists(vol_name):
+        run_command("mincreshape -clobber -dimrange time={} {} {}"
+                    .format(i, func_image_mnc, vol_name))
     return vol_name
 
 
@@ -88,9 +90,6 @@ def niaklike(dataset, output_file_name, chained_init=True):
 
         # Extract volume from sequence
         vol_name = extract_mnc_volume(func_name, func_image_mnc, i)
-        if not os.path.exists(vol_name):
-            run_command("mincreshape -clobber -dimrange time={} {} {}"
-                        .format(i, func_image_mnc, vol_name))
         output_transfo = "{}_transf_{}_{}.xfm".format(func_name,
                                                       i,
                                                       n_ref_vol)
@@ -123,8 +122,6 @@ def mcflirt_fudge(dataset, output_file_name):
 def mcflirt(dataset, output_file_name, fudge=False):
     # Run mcflirt
     output_file_name = output_file_name.replace('.par', '')
-    if os.path.exists(output_file_name):
-        shutil.rmtree(output_file_name)
     command = ("mcflirt -in {} -out {} -plots "
                " -spline_final".format(dataset, output_name))
     if fudge:
@@ -141,23 +138,21 @@ def check_file(parser, x):
 def write_average(param_files, average_param_file):
     average_transfos = None
     n_vols = -1
-    n_iterations = 0
     for param_file in param_files:
         transfos = {}
         with open(param_file) as f:
             param_file_transfos = f.readlines()
         for param_file_transfo in param_file_transfos:
-            if param_file_transfo == "":
+            if param_file_transfo.strip() == "":
                 continue
-            n_iterations += 1
             a = param_file_transfo.split(" ")
             assert(len(a) == 6)
-            transfos.append(float(a[0]),
-                            float(a[1]),
-                            float(a[2]),
-                            float(a[3]),
-                            float(a[4]),
-                            float(a[5]))
+            transfos.append([float(a[0]),
+                             float(a[1]),
+                             float(a[2]),
+                             float(a[3]),
+                             float(a[4]),
+                             float(a[5])])
         if n_vols == -1:
             n_vols = len(transfos)
         assert(len(transfos) == n_vols)
@@ -169,7 +164,7 @@ def write_average(param_files, average_param_file):
                     average_transfos[i][j] += transfos[i][j]
     for i in range(0, n_vols):
         for j in range(0, 6):
-            average_transfos[i][j] /= n_iterations
+            average_transfos[i][j] /= len(param_files)
     with open(average_param_file, 'w') as f:
         for t in average_transfos:
             f.write("{} {} {} {} {} {}{}".format(t[0],
@@ -235,6 +230,8 @@ def main():
         "niaklike_no_chained_init": niaklike_no_chained_init,
         "spm": spm
     }
+    if os.path.exists(output_file_name):
+        shutil.rmtree(output_file_name)
     if args.boostrap:
         bootstrap_algo(algorithms, args.algorithm,
                        args.bootstrap, args.dataset, args.output_name)
