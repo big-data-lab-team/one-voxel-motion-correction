@@ -10,7 +10,9 @@ import transfo_utils as tu
 from logging import info
 from logging import error
 from termcolor import colored
-from one_voxel import main as ov
+from ovmc import transfo_utils as tu
+from ovmc import one_voxel as ov
+import tempfile
 
 
 def run_command(command):
