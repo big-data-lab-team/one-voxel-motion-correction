@@ -4,6 +4,10 @@
         "image": "bigdatalabteam/one-voxel-motion-correction:latest",
         "type": "docker"
     },
+    "environment-variables": [
+        {"name": "FSLOUTPUTTYPE",
+	 "value": "NIFTI_GZ"}
+    ],
     "description": "mcflirt motion estimation as used in ovmc experiment.",
     "inputs": [
         {
@@ -40,16 +44,32 @@
             "name": "test-mcflirt-ovmc",
             "invocation": {
                 "algorithm": "mcflirt",
-                "output_file_name": "transformations",
+                "output_file_name": "output",
                 "dataset": "/test/test.nii.gz"
             },
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                        "id": "par_file",
-                        "md5-reference": "0b3cb6406ac8ec34042ae2c7a480dba6"
-                    }
-                ]
+                    "id": "par_file",
+                    "md5-reference": "0b3cb6406ac8ec34042ae2c7a480dba6"
+                }
+				]
+            }
+        },
+        {
+            "name": "test-mcflirt-fudge-ovmc",
+            "invocation": {
+                "algorithm": "mcflirt_fudge",
+                "output_file_name": "output",
+                "dataset": "/test/test.nii.gz"
+            },
+            "assertions": {
+                "exit-code": 0,
+                "output-files": [ {
+                    "id": "par_file",
+                    "md5-reference": "0b3cb6406ac8ec34042ae2c7a480dba6"
+                }
+				]
             }
         }
     ],

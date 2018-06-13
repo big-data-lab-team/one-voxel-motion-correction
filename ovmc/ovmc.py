@@ -6,7 +6,6 @@ import os
 import shutil
 import logging
 import tempfile
-import transfo_utils as tu
 from logging import info
 from logging import error
 from termcolor import colored
@@ -125,7 +124,7 @@ def mcflirt(dataset, output_file_name, fudge=False):
     # Run mcflirt
     output_file_name = output_file_name.replace('.par', '')
     command = ("mcflirt -in {} -out {} -plots "
-               " -spline_final".format(dataset, output_name))
+               " -spline_final".format(dataset, output_file_name))
     if fudge:
         command += " -fudge"
     run_command(command)
@@ -232,9 +231,10 @@ def main():
         "niaklike_no_chained_init": niaklike_no_chained_init,
         "spm": spm
     }
+    output_file_name = args.output_name
     if os.path.exists(output_file_name):
-        shutil.rmtree(output_file_name)
-    if args.boostrap:
+        os.remove(output_file_name)
+    if args.bootstrap:
         bootstrap_algo(algorithms, args.algorithm,
                        args.bootstrap, args.dataset, args.output_name)
     else:
