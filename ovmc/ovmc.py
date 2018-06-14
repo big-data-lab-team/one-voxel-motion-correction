@@ -37,18 +37,27 @@ def spm(dataset, output_file_name):
     with open(template_file) as f:
         template_string = f.read()
 
+    temp_file_1 = tempfile.NamedTemporaryFile(delete=False)
+    temp_file_2 = tempfile.NamedTemporaryFile(delete=False)
+
     template_string = template_string.replace('[SPM_INSTALL]', '/spm')
     template_string = template_string.replace('[DATASET]', dataset)
+    template_string = template_string.replace('[OUTPUT_FILE_NAME]', output_file_name)
+    template_string = template_string.replace('[TEMP_FILE_1]', temp_file_1.name)
+    template_string = template_string.replace('[TEMP_FILE_2]', temp_file_2.name)
     script_file = tempfile.NamedTemporaryFile(delete=False)
-    script_file.write(template_string)
+    script_file.write(template_string.encode())
     script_file.close()
     run_command("octave {}".format(script_file.name))
     # TODO Put the results in the right format
     assert(os.path.exists(output_file_name))
-    os.unlink(script_file)
+    os.unlink(script_file.name)
+    os.unlink(temp_file_1.name)
+    os.unlink(temp_file_2.name)
 
 
 def extract_mnc_volume(func_name, func_image_mnc, i):
+    i = int(i)
     vol_name = "{}_vol_{}.mnc".format(func_name, i)
     if not os.path.exists(vol_name):
         run_command("mincreshape -clobber -dimrange time={} {} {}"
@@ -72,11 +81,12 @@ def niaklike(dataset, output_file_name, chained_init=True):
 
     # Get reference volume
     n_vols = int(run_command("mincinfo -dimlength"
-                             " time {}").format(func_image_mnc))
-    n_ref_vol = nvols / 2
+                             " time {}".format(func_image_mnc)))
+    n_ref_vol = n_vols / 2
 
     # Extract reference volume
     ref_vol_name = extract_mnc_volume(func_name, func_image_mnc, n_ref_vol)
+    info("Reference volume: {}".format(ref_vol_name))
     minctrac_opts = ("-clobber -xcorr -forward -lsq6 -speckle 0 -est_center"
                      " -tol 0.0005  -trilinear -simplex 10 -model_lattice "
                      "-step 10 10 10")
@@ -84,7 +94,7 @@ def niaklike(dataset, output_file_name, chained_init=True):
     # Create identity transformation
     run_command("param2xfm -clobber identity.xfm -translation 0 0 0"
                 " -rotations 0 0 0 -clobber")
-    init_transfo = 'identify.xfm'
+    init_transfo = 'identity.xfm'
 
     # Registration
     for i in range(0, n_vols):
@@ -105,7 +115,10 @@ def niaklike(dataset, output_file_name, chained_init=True):
         # Write transformation to output file
         transfo_vector = tu.get_transfo_vector(tu.read_transfo(output_transfo))
         with open(output_file_name, 'a') as output_file:
-            output_file.write(transfo_vector)
+            output_file.write("{} {} {} {} {} {}\n".format(
+                              transfo_vector[0], transfo_vector[1],
+                              transfo_vector[2], transfo_vector[3],
+                              transfo_vector[4], transfo_vector[5]))
 
         # Initialize next registration
         if chained_init:
@@ -205,7 +218,8 @@ def main():
                            " sequence) with mcflirt and converts the result"
                            " to the format used by ovmc.")
     parser.add_argument("algorithm", action="store", help="Motion correction"
-                        "algorithm to use",
+                        "algorithm to use. For spm, SPM12 installation has to"
+                        " be available in /spm.",
                         choices=["mcflirt", "mcflirt_fudge",
                                  "niaklike", "niaklike_no_chained_init", "spm"])
     parser.add_argument("dataset", help="fMRI dataset to process.",
@@ -214,9 +228,6 @@ def main():
                                             " with the specified number "
                                             "of bootstrap samples.",
                         action="store")
-    parser.add_argument("spm_path", help="Path to SPM12 installation,"
-                        " used by spm algorithm.",
-                        type=lambda x: check_file(parser, x))
     parser.add_argument("output_name", help="Output file name. .par files "
                         "containing transformation parameters "
                         "(tx, ty, tz, rx, ry,"
@@ -238,7 +249,7 @@ def main():
         bootstrap_algo(algorithms, args.algorithm,
                        args.bootstrap, args.dataset, args.output_name)
     else:
-        algorithms[args.algorithm](args.dataset, args.output_name+".par")
+        algorithms[args.algorithm](args.dataset, args.output_name)
 
 
 if __name__ == '__main__':
