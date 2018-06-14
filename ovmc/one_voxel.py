@@ -9,8 +9,7 @@ def get_randint(dim, margin):
     return random.randint(max(dim/2-margin, 0), min(dim-1, dim/2+margin))
 
 
-def main():
-
+def main(args=None):
     parser = argparse.ArgumentParser(description="Changes the intensity of the\
  central voxel in each volume by 1%.")
     parser.add_argument("image_file")
@@ -19,7 +18,7 @@ def main():
                         help=("Instead of changing the intensity of the"
                               " central voxel, pick one at random in a 30-voxel"
                               " bounding box centered at the image center."))
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     # Load image using nibabel
     im = nibabel.load(args.image_file)

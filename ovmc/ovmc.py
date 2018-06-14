@@ -153,7 +153,7 @@ def write_average(param_files, average_param_file):
     average_transfos = None
     n_vols = -1
     for param_file in param_files:
-        transfos = {}
+        transfos = []
         with open(param_file) as f:
             param_file_transfos = f.readlines()
         for param_file_transfo in param_file_transfos:
@@ -169,7 +169,7 @@ def write_average(param_files, average_param_file):
                              float(a[5])])
         if n_vols == -1:
             n_vols = len(transfos)
-        assert(len(transfos) == n_vols)
+        assert(len(transfos) == n_vols), "{} != {}".format(len(transfos), n_vols)
         if average_transfos is None:
             average_transfos = transfos
         else:
@@ -199,13 +199,13 @@ def bootstrap_algo(algorithms, algo_name, n_samples,
 
         # Add noise to functional image
         noised_image = "{}-iter-{}.nii.gz".format(func_name, n)
-        ov("{} {} --random".format(dataset, noised_image))
+        ov([dataset, noised_image, "--random"])
         assert(os.path.exists(noised_image))
 
         # Run the motion estimation
         output_transfo_file = "{}_iter_{}.par".format(output_name, n)
         algorithms[algo_name](noised_image, output_transfo_file)
-        output_files.add(output_transfo_file)
+        output_files.append(output_transfo_file)
 
         # Compute partial average
         output_transfo_file = "{}_average_{}.par"
@@ -247,7 +247,7 @@ def main():
         os.remove(output_file_name)
     if args.bootstrap:
         bootstrap_algo(algorithms, args.algorithm,
-                       args.bootstrap, args.dataset, args.output_name)
+                       int(args.bootstrap), args.dataset, args.output_name)
     else:
         algorithms[args.algorithm](args.dataset, args.output_name)
 
