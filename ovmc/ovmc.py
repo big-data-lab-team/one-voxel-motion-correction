@@ -12,6 +12,7 @@ from termcolor import colored
 from ovmc import transfo_utils as tu
 from ovmc import one_voxel as ov
 import tempfile
+import nibabel
 
 
 def run_command(command):
@@ -29,6 +30,13 @@ def run_command(command):
                         " code was {})".format(process.returncode))
     return stdout.decode("utf-8")
 
+
+def n_vols(dataset):
+    im = nibabel.load(dataset)
+    shape = im.header.get_data_shape()
+    if len(shape) < 4:
+        return 1
+    return shape[3]
 
 def spm(dataset, output_file_name):
     path, fil = os.path.split(__file__)
@@ -49,7 +57,6 @@ def spm(dataset, output_file_name):
     script_file.write(template_string.encode())
     script_file.close()
     run_command("octave {}".format(script_file.name))
-    # TODO Put the results in the right format
     assert(os.path.exists(output_file_name))
     os.unlink(script_file.name)
     os.unlink(temp_file_1.name)
@@ -64,6 +71,21 @@ def extract_mnc_volume(func_name, func_image_mnc, i):
                     .format(i, func_image_mnc, vol_name))
     return vol_name
 
+
+def niak(dataset, output_file_name):
+    path, fil = os.path.split(__file__)
+    template_file = os.path.join(path, "niak_template.m")
+
+    with open(template_file) as f:
+        template_string = f.read()
+
+    template_string = template_string.replace('[DATASET]', dataset)
+    template_string = template_string.replace('[FOLDER_OUT]', output_file_name)
+    script_file = tempfile.NamedTemporaryFile(delete=False)
+    script_file.write(template_string.encode())
+    script_file.close()
+    run_command("octave {}".format(script_file.name))
+    # TODO Put the results in the right format
 
 def niaklike(dataset, output_file_name, chained_init=True):
 
@@ -80,8 +102,7 @@ def niaklike(dataset, output_file_name, chained_init=True):
         assert(os.path.exists(func_image_mnc))
 
     # Get reference volume
-    n_vols = int(run_command("mincinfo -dimlength"
-                             " time {}".format(func_image_mnc)))
+    n_vols = n_vols(dataset)
     n_ref_vol = n_vols / 2
 
     # Extract reference volume
@@ -141,6 +162,13 @@ def mcflirt(dataset, output_file_name, fudge=False):
     if fudge:
         command += " -fudge"
     run_command(command)
+
+def afni(dataset, output_file_name):
+    command = ("3dvolreg -1Dfile {} -base {} {}".format(output_file_name,
+                                                        dataset,
+                                                        n_vols(dataset)/2))
+    run_command(command)
+
 
 
 def check_file(parser, x):
@@ -221,7 +249,7 @@ def main():
                         "algorithm to use. For spm, SPM12 installation has to"
                         " be available in /spm.",
                         choices=["mcflirt", "mcflirt_fudge",
-                                 "niaklike", "niaklike_no_chained_init", "spm"])
+                                 "niaklike", "niaklike_no_chained_init", "spm", "afni"])
     parser.add_argument("dataset", help="fMRI dataset to process.",
                         type=lambda x: check_file(parser, x))
     parser.add_argument("--bootstrap", help="Runs an one-voxel experiment"
@@ -240,7 +268,8 @@ def main():
         "mcflirt_fudge": mcflirt_fudge,
         "niaklike": niaklike,
         "niaklike_no_chained_init": niaklike_no_chained_init,
-        "spm": spm
+        "spm": spm,
+        "afni": afni
     }
     output_file_name = args.output_name
     if os.path.exists(output_file_name):
