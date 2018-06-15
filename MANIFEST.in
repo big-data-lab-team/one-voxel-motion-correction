@@ -1,1 +1,2 @@
 include ovmc/spm_template.m
+include ovmc/niak_template.m

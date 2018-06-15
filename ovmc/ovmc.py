@@ -87,6 +87,9 @@ def niak(dataset, output_file_name):
     run_command("octave {}".format(script_file.name))
     # TODO Put the results in the right format
 
+def niak_no_chained_init(dataset, output_file_name):
+    raise Exceptin("Not implemented yet")
+
 def niaklike(dataset, output_file_name, chained_init=True):
 
     # Convert dataset to mnc
@@ -165,8 +168,8 @@ def mcflirt(dataset, output_file_name, fudge=False):
 
 def afni(dataset, output_file_name):
     command = ("3dvolreg -1Dfile {} -base {} {}".format(output_file_name,
-                                                        dataset,
-                                                        n_vols(dataset)/2))
+                                                        int(n_vols(dataset)/2),
+                                                        dataset))
     run_command(command)
 
 
@@ -249,7 +252,7 @@ def main():
                         "algorithm to use. For spm, SPM12 installation has to"
                         " be available in /spm.",
                         choices=["mcflirt", "mcflirt_fudge",
-                                 "niaklike", "niaklike_no_chained_init", "spm", "afni"])
+                                 "niak", "niak_no_chained_init", "spm", "afni"])
     parser.add_argument("dataset", help="fMRI dataset to process.",
                         type=lambda x: check_file(parser, x))
     parser.add_argument("--bootstrap", help="Runs an one-voxel experiment"
@@ -266,8 +269,8 @@ def main():
     algorithms = {
         "mcflirt": mcflirt,
         "mcflirt_fudge": mcflirt_fudge,
-        "niaklike": niaklike,
-        "niaklike_no_chained_init": niaklike_no_chained_init,
+        "niak": niak,
+        "niak_no_chained_init": niak_no_chained_init,
         "spm": spm,
         "afni": afni
     }
