@@ -43,6 +43,9 @@ def get_euler_angles(transfo_mat):
 
 def get_transfo_mat(x):
     tx, ty, tz, rx, ry, rz = x
+    rx = rx*math.pi/180
+    ry = ry*math.pi/180
+    rz = rz*math.pi/180
     x = numpy.matrix([[1, 0, 0],
                       [0, cos(rx), -sin(rx)],
                       [0, sin(rx), cos(rx)]])
@@ -59,9 +62,15 @@ def get_transfo_mat(x):
                         [ 0 , 0 , 0 , 1]])
     return mat
 
-def framewise_displacement(transfo):
-    ref = 
-
+def framewise_displacement(transfo_vec):
+    tx, ty, tz, rx, ry, rz = transfo_vec
+    rx = rx/180.0*math.pi
+    ry = ry/180.0*math.pi
+    rz = rz/180.0*math.pi
+    fd = (abs(rx) * 50 + abs(ry) * 50 + abs(rz) * 50
+          + abs(tx) + abs(ty) + abs(tz))
+    return fd
+ 
 # Reads an MNI xfm transformation
 def read_transfo(file_name):
     transfo = numpy.zeros(shape=(4, 4))
