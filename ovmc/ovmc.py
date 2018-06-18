@@ -94,7 +94,7 @@ def niak(dataset, output_file_name, chained=True):
     run_command("octave {}".format(script_file.name))
 
     # Put the results in the right format and file
-    with open(output_file_name, 'a') as output_file:
+    with open(output_file_name, 'w') as output_file:
         for i in range(1, n_volumes+1):
             output_transfo = os.path.join(tempdir, 'transf_{}.xfm'.format(i))
             transfo_vector = tu.get_transfo_vector(tu.read_transfo(output_transfo))
@@ -106,68 +106,6 @@ def niak(dataset, output_file_name, chained=True):
 
 def niak_no_chained_init(dataset, output_file_name):
     return niak(dataset, output_file_name, chained=False)
-
-def niaklike(dataset, output_file_name, chained_init=True):
-
-    # Convert dataset to mnc
-    func_name = dataset.replace('.nii', '').replace('.gz', '')
-    func_image_mnc = func_name + ".mnc"
-    if not os.path.exists(func_image_mnc):
-        func_image_nii = func_name + '.nii'
-        if not os.path.exists(func_image_nii):
-            # It must be a .nii.gz
-            run_command("gunzip {}".format(dataset))
-            assert(os.path.exists(func_image_nii))
-        run_command("nii2mnc {} {}".format(func_image_nii, func_image_mnc))
-        assert(os.path.exists(func_image_mnc))
-
-    # Get reference volume
-    n_vols = n_vols(dataset)
-    n_ref_vol = n_vols / 2
-
-    # Extract reference volume
-    ref_vol_name = extract_mnc_volume(func_name, func_image_mnc, n_ref_vol)
-    info("Reference volume: {}".format(ref_vol_name))
-    minctrac_opts = ("-clobber -xcorr -forward -lsq6 -speckle 0 -est_center"
-                     " -tol 0.0005  -trilinear -simplex 10 -model_lattice "
-                     "-step 10 10 10")
-
-    # Create identity transformation
-    run_command("param2xfm -clobber identity.xfm -translation 0 0 0"
-                " -rotations 0 0 0 -clobber")
-    init_transfo = 'identity.xfm'
-
-    # Registration
-    for i in range(0, n_vols):
-
-        # Extract volume from sequence
-        vol_name = extract_mnc_volume(func_name, func_image_mnc, i)
-        output_transfo = "{}_transf_{}_{}.xfm".format(func_name,
-                                                      i,
-                                                      n_ref_vol)
-
-        # Register volume to reference volume
-        command = ("minctracc {} {} {} -transformation {} {}"
-                   .format(vol_name, ref_vol_name, output_transfo,
-                           init_transfo, minctrac_opts))
-        run_command(command)
-        assert(os.path.exists(output_transfo))
-
-        # Write transformation to output file
-        transfo_vector = tu.get_transfo_vector(tu.read_transfo(output_transfo))
-        with open(output_file_name, 'a') as output_file:
-            output_file.write("{} {} {} {} {} {}\n".format(
-                              transfo_vector[0], transfo_vector[1],
-                              transfo_vector[2], transfo_vector[3],
-                              transfo_vector[4], transfo_vector[5]))
-
-        # Initialize next registration
-        if chained_init:
-            init_transfo = output_transfo
-
-
-def niaklike_no_chained_init(dataset, output_file_name):
-    niaklike(dataset, output_file_name, False)
 
 
 def mcflirt_fudge(dataset, output_file_name):
@@ -240,6 +178,7 @@ def write_average(param_files, average_param_file):
 
 def bootstrap_algo(algorithms, algo_name, n_samples,
                    dataset, output_name):
+    output_name = output_name.replace('.par', '')
     func_name = dataset.replace('.nii', '').replace('.gz', '')
     output_files = []
     for n in range(0, n_samples):
@@ -256,7 +195,7 @@ def bootstrap_algo(algorithms, algo_name, n_samples,
         output_files.append(output_transfo_file)
 
         # Compute partial average
-        output_transfo_file = "{}_average_{}.par"
+        output_transfo_file = "{}_average_{}.par".format(output_name, n_samples)
         write_average(output_files, output_transfo_file)
 
 

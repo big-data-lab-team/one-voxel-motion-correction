@@ -30,7 +30,7 @@ def get_tr_vec(transfo_mat):
 def get_transfo_vector(transfo_mat):
     tx, ty, tz = get_tr_vec(transfo_mat)
     rx, ry, rz = get_euler_angles(transfo_mat)
-    return [tx, ty, tz, rx, ry, rz]
+    return [tx, ty, tz, rx*180.0/math.pi, ry*180.0/math.pi, rz*180.0/math.pi]
 
 def get_euler_angles(transfo_mat):
     # From http://nghiaho.com/?page_id=846
@@ -58,6 +58,9 @@ def get_transfo_mat(x):
                         [ r.item(2,0) , r.item(2,1) , r.item(2,2) , tz],
                         [ 0 , 0 , 0 , 1]])
     return mat
+
+def framewise_displacement(transfo):
+    ref = 
 
 # Reads an MNI xfm transformation
 def read_transfo(file_name):
