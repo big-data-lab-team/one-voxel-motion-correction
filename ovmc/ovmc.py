@@ -75,17 +75,30 @@ def extract_mnc_volume(func_name, func_image_mnc, i):
 def niak(dataset, output_file_name):
     path, fil = os.path.split(__file__)
     template_file = os.path.join(path, "niak_template.m")
+    tempdir = tempfile.mkdtemp()
 
     with open(template_file) as f:
         template_string = f.read()
 
+    n_volumes = n_vols(dataset)
     template_string = template_string.replace('[DATASET]', dataset)
-    template_string = template_string.replace('[FOLDER_OUT]', output_file_name)
+    template_string = template_string.replace('[FOLDER_OUT]', tempdir)
+    template_string = template_string.replace('[N_VOLS]', str(n_volumes))
     script_file = tempfile.NamedTemporaryFile(delete=False)
     script_file.write(template_string.encode())
     script_file.close()
     run_command("octave {}".format(script_file.name))
-    # TODO Put the results in the right format
+
+    # Put the results in the right format and file
+    with open(output_file_name, 'a') as output_file:
+        for i in range(1, n_volumes+1):
+            output_transfo = os.path.join(tempdir, 'transf_{}.xfm'.format(i))
+            transfo_vector = tu.get_transfo_vector(tu.read_transfo(output_transfo))
+            output_file.write("{} {} {} {} {} {}\n".format(
+                              transfo_vector[0], transfo_vector[1],
+                              transfo_vector[2], transfo_vector[3],
+                              transfo_vector[4], transfo_vector[5]))
+
 
 def niak_no_chained_init(dataset, output_file_name):
     raise Exceptin("Not implemented yet")
