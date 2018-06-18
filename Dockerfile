@@ -10,6 +10,7 @@ RUN (mkdir /usr/local/afni; cd /usr/local/afni;\
      tar zxvf linux_ubuntu_16_64.tgz ; rm linux_ubuntu_16_64.tgz)
 ENV PATH=$PATH:/usr/local/afni/linux_ubuntu_16_64
 
+ADD bin/niak_brick_motion_parameters.m /usr/local/niak/bricks/fmri_preprocess/
 ADD bin/mcflirt /bin
 ADD bin/spm_brick_realign.m /usr/local/niak/bricks
 ADD bin/psom_defaults.m /usr/local/niak/bricks

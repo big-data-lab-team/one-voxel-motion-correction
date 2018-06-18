@@ -72,7 +72,7 @@ def extract_mnc_volume(func_name, func_image_mnc, i):
     return vol_name
 
 
-def niak(dataset, output_file_name):
+def niak(dataset, output_file_name, chained=True):
     path, fil = os.path.split(__file__)
     template_file = os.path.join(path, "niak_template.m")
     tempdir = tempfile.mkdtemp()
@@ -84,6 +84,10 @@ def niak(dataset, output_file_name):
     template_string = template_string.replace('[DATASET]', dataset)
     template_string = template_string.replace('[FOLDER_OUT]', tempdir)
     template_string = template_string.replace('[N_VOLS]', str(n_volumes))
+    if chained:
+        template_string = template_string.replace('[CHAINED]', 'true')
+    else:
+        template_string = template_string.replace('[CHAINED]', 'false')
     script_file = tempfile.NamedTemporaryFile(delete=False)
     script_file.write(template_string.encode())
     script_file.close()
@@ -101,7 +105,7 @@ def niak(dataset, output_file_name):
 
 
 def niak_no_chained_init(dataset, output_file_name):
-    raise Exceptin("Not implemented yet")
+    return niak(dataset, output_file_name, chained=False)
 
 def niaklike(dataset, output_file_name, chained_init=True):
 
