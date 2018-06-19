@@ -13,6 +13,7 @@ from ovmc import transfo_utils as tu
 from ovmc import one_voxel as ov
 import tempfile
 import nibabel
+import pdb
 
 # Utils
 
@@ -52,7 +53,8 @@ def write_params(params, param_file):
                      os.linesep)
 
 
-def write_fds(transfo_file, fd_file_name):
+def write_fds(transfo_file):
+    fd_file_name = os.path.splitext(transfo_file)[0] + '.fd'
     with open(transfo_file) as f:
         transfos = f.readlines()
     with open(fd_file_name, 'w') as fd_file:
@@ -95,6 +97,7 @@ def spm(dataset, output_file_name):
     os.unlink(script_file.name)
     os.unlink(temp_file_1.name)
     os.unlink(temp_file_2.name)
+    return output_file_name
 
 
 def niak(dataset, output_file_name, chained=True):
@@ -126,6 +129,8 @@ def niak(dataset, output_file_name, chained=True):
             transfo_vector = tu.get_transfo_vector(transfo)
             write_params(transfo_vector, output_file)
     cleanup(['identity.xfm'])
+    return output_file_name
+
 
 def niak_no_chained_init(dataset, output_file_name):
     return niak(dataset, output_file_name, chained=False)
@@ -144,6 +149,7 @@ def mcflirt(dataset, output_file_name, fudge=False):
         command += " -fudge"
     run_command(command)
     cleanup([output_file_name + '.nii.gz'])
+    return output_file_name
 
 
 def afni(dataset, output_file_name):
@@ -152,6 +158,7 @@ def afni(dataset, output_file_name):
                                                         dataset))
     run_command(command)
     cleanup(['volreg+orig.HEAD', 'volreg+orig.BRIK'])
+    return output_file_name
 
 
 # Bootstrap
@@ -188,8 +195,10 @@ def write_average(param_files, average_param_file):
 
 
 def bootstrap_algo(algo_func, n_samples, dataset, output_name):
+    output_name = output_name.replace('.par', '')
     func_name = dataset.replace('.nii', '').replace('.gz', '')
     output_files = []
+    averages = []
     for n in range(0, n_samples):
         info("Bootstratp iteration #{}".format(n))
 
@@ -199,15 +208,16 @@ def bootstrap_algo(algo_func, n_samples, dataset, output_name):
         assert(os.path.exists(noised_image))
 
         # Run the motion estimation
-        output_transfo_file = "{}_titer_{}.par".format(output_name, n)
+        output_transfo_file = "{}_iter_{}.par".format(output_name, n)
         algo_func(noised_image, output_transfo_file)
-        write_fds(output_transfo_file, "{}_titer_{}.fd".format(output_name, n))
+        write_fds(output_transfo_file)
         output_files.append(output_transfo_file)
 
         # Compute partial average
-        output_transfo_file = "{}_average_{}.par".format(output_name, n_samples)
+        output_transfo_file = "{}_average_{}.par".format(output_name, n)
         write_average(output_files, output_transfo_file)
-
+        averages.append(output_transfo_file)
+    return averages
 
 # Parsing
 
@@ -253,22 +263,14 @@ def main():
     logging.basicConfig(level=logging.INFO,
                         format='INFO:%(asctime)s %(message)s')
 
-    # Put motion estimation algorithms in a dict of functions
-    algorithms = {
-            "mcflirt": mcflirt,
-            "mcflirt_fudge": mcflirt_fudge,
-            "niak": niak,
-            "niak_no_chained_init": niak_no_chained_init,
-            "spm": spm,
-            "afni": afni
-        }
+    # Define motion estimation function
+    algorithm = globals()[args.algorithm]
     if args.bootstrap:
-        for algo in algorithms.keys():
-            algorithms[algo] = (lambda dataset, output_file_name:
-                                bootstrap_algo(algorithms[algo],
-                                               int(args.bootstrap),
-                                               args.dataset,
-                                               args.output_name))
+        algorithm = (lambda dataset, output_file_name:
+                     bootstrap_algo(globals()[args.algorithm],
+                                    int(args.bootstrap),
+                                    dataset,
+                                    output_file_name))
 
     # Remove output files if they already exist
     output_files = [
@@ -279,36 +281,54 @@ def main():
         args.output_name + '_diff.par',
         args.output_name + '_diff.fd'
     ]
+    if args.bootstrap:
+        for i in range(0, args.bootstrap):
+            output_files.append(args.output_name +
+                                '_iter_{}.par'.format(str(i)))
+            output_files.append(args.output_name +
+                                '_average_{}.par'.format(str(i)))
+            output_files.append(args.output_name +
+                                '_iter_{}.fd'.format(str(i)))
+            output_files.append(args.output_name +
+                                '_average_{}.fd'.format(str(i)))
     cleanup(output_files)
 
     # Original dataset
     output_name_1 = args.output_name + '.par'
-    algorithms[args.algorithm](args.dataset, output_name_1)
-    assert(os.path.exists(output_name_1))
-    write_fds(output_name_1, args.output_name + '.fd')
+    results_original = algorithm(args.dataset, output_name_1)
+    for file_name in results_original:
+        write_fds(file_name)
 
     # Perturbated dataset
     output_name_2 = args.output_name + '_perturbated.par'
-    algorithms[args.algorithm](args.dataset_perturbated, output_name_2)
-    assert(os.path.exists(output_name_2))
-    write_fds(output_name_2, args.output_name + '_perturbated.fd')
+    results_perturbated = algorithm(args.dataset_perturbated, output_name_2)
+    for file_name in results_perturbated:
+        write_fds(file_name)
 
     # Difference
-    with open(output_name_1) as f:
-        transfos_1 = f.readlines()
-    with open(output_name_2) as f:
-        transfos_2 = f.readlines()
-    assert(len(transfos_1) == len(transfos_2))
-    with open(args.output_name + '_diff.fd', 'w') as fd_file:
-        with open(args.output_name + '_diff.par', 'w') as par_file:
-            for i in range(0, len(transfos_1)):
-                t1 = parse_transfo(transfos_1[i])
-                t2 = parse_transfo(transfos_2[i])
-                diff = tu.diff_transfos(tu.get_transfo_mat(t1),
-                                        tu.get_transfo_mat(t2))
-                write_params(diff, par_file)
-                fd = tu.framewise_displacement(diff)
-                fd_file.write(str(fd)+os.linesep)
+    assert(len(results_original) == len(results_perturbated))
+    for i in range(0, len(results_original)):
+        # Read all the transfos
+        with open(results_original[i]) as f:
+            transfos_1 = f.readlines()
+        with open(results_perturbated[i]) as f:
+            transfos_2 = f.readlines()
+        assert(len(transfos_1) == len(transfos_2))
+        # Compute the differences
+        output_name = os.path.splitext(results_original[i])[0]
+        with open(output_name + '_diff.fd', 'w') as fd_file:
+            with open(output_name + '_diff.par', 'w') as par_file:
+                for i in range(0, len(transfos_1)):
+                    # Compute difference transfo (T1oT2-1)
+                    t1 = parse_transfo(transfos_1[i])
+                    t2 = parse_transfo(transfos_2[i])
+                    diff = tu.diff_transfos(tu.get_transfo_mat(t1),
+                                            tu.get_transfo_mat(t2))
+                    # Write parameters
+                    write_params(diff, par_file)
+                    # Write FDs
+                    fd = tu.framewise_displacement(diff)
+                    fd_file.write(str(fd)+os.linesep)
 
 
 if __name__ == '__main__':
