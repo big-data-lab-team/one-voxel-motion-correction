@@ -1,9 +1,10 @@
 from simexp/niak-cog
 
 RUN apt-get install -y\
-  python-setuptools python-dev &&\
+  python-setuptools python-dev python-pkg-resources &&\
   easy_install pip &&\
   mkdir /test && mkdir /ovmc
+
 
 # AFNI
 RUN (mkdir /usr/local/afni; cd /usr/local/afni;\
@@ -30,4 +31,5 @@ ADD test/data/test_one_voxel.nii.gz /test
 # OVMC
 ADD ovmc /ovmc/ovmc
 ADD setup.py /ovmc
-RUN (cd /ovmc && ls && pip install .)
+RUN pip install virtualenv && virtualenv --python=python3 /env &&\
+    . /env/bin/activate && (cd /ovmc && ls && pip install .)

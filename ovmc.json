@@ -1,5 +1,5 @@
 {
-    "command-line": "ovmc [ALGORITHM] [DATASET] [DATASET_PERTURBATED] [OUTPUT_BASE_NAME]",
+    "command-line": ". /env/bin/activate; ovmc [ALGORITHM] [DATASET] [DATASET_PERTURBATED] [OUTPUT_BASE_NAME]",
     "container-image": {
         "image": "bigdatalabteam/one-voxel-motion-correction:latest",
         "type": "docker"
