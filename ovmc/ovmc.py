@@ -81,7 +81,7 @@ def spm(dataset, output_file_name):
     temp_file_1 = tempfile.NamedTemporaryFile(delete=False)
     temp_file_2 = tempfile.NamedTemporaryFile(delete=False)
 
-    template_string = template_string.replace('[SPM_INSTALL]', '/spm')
+    template_string = template_string.replace('[SPM_INSTALL]', '/spm12')
     template_string = template_string.replace('[DATASET]', dataset)
     template_string = template_string.replace('[OUTPUT_FILE_NAME]',
                                               output_file_name)
@@ -236,7 +236,7 @@ def main():
                            " to the format used by ovmc.")
     parser.add_argument("algorithm", action="store", help="Motion correction"
                         "algorithm to use. For spm, SPM12 installation has to"
-                        " be available in /spm.",
+                        " be available in /spm12.",
                         choices=["mcflirt", "mcflirt_fudge",
                                  "niak", "niak_no_chained_init", "spm", "afni"])
     parser.add_argument("dataset", help="fMRI dataset to process.",
