@@ -24,7 +24,6 @@ ENV FSLOUTPUTTYPE=NIFTI_GZ
 ADD bin/spm_brick_realign.m /usr/local/niak/bricks
 ADD bin/psom_defaults.m /usr/local/niak/bricks
 ADD spm12.tgz /
-RUN (cd / && tar zxvf spm12.tgz && rm -f spm12.tgz)
 
 # TEST DATA
 ADD test/data/test.nii.gz /test
