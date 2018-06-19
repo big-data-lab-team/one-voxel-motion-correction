@@ -70,6 +70,10 @@ def framewise_displacement(transfo_vec):
     fd = (abs(rx) * 50 + abs(ry) * 50 + abs(rz) * 50
           + abs(tx) + abs(ty) + abs(tz))
     return fd
+
+
+def diff_transfos(transfo1, transfo2):
+    return get_transfo_vector(transfo1*transfo2.I)
  
 # Reads an MNI xfm transformation
 def read_transfo(file_name):

@@ -1,8 +1,8 @@
-function [files_in,files_out,opt] = niak_brick_motion_parameters(files_in,files_out,opt)
+function [files_in,files_out,opt] = niak_brick_motion_parameters_no_chained(files_in,files_out,opt)
 % Estimate rigid-body motion parameters on fMRI volumes.
 %
 % SYNTAX:
-%   [FILES_IN,FILES_OUT,OPT] = NIAK_BRICK_MOTION_PARAMETERS(FILES_IN,FILES_OUT,OPT)
+%   [FILES_IN,FILES_OUT,OPT] = NIAK_BRICK_MOTION_PARAMETERS_NO_CHAINED(FILES_IN,FILES_OUT,OPT)
 %
 % _________________________________________________________________________
 % INPUTS:
@@ -130,9 +130,10 @@ end
 
 %% OPTIONS
 gb_name_structure = 'opt';
-gb_list_fields   = {'interp'    , 'ignore_slice' ,'folder_out' ,'flag_test' ,'flag_verbose' ,'fwhm' ,'step' ,'tol', 'chained'};
-gb_list_defaults = {'trilinear' , 1              ,''           ,false       ,true           ,5      ,10     ,0.0005, true};
+gb_list_fields   = {'interp'    , 'ignore_slice' ,'folder_out' ,'flag_test' ,'flag_verbose' ,'fwhm' ,'step' ,'tol'};
+gb_list_defaults = {'trilinear' , 1              ,''           ,false       ,true           ,5      ,10     ,0.0005};
 niak_set_defaults
+
 
 %% Building default output names
 
@@ -255,17 +256,9 @@ for num_v = 1:nb_vol
     end
 
     %% Perform rigid-body coregistration
-    instr_minctracc = cat(2,'minctracc ',file_vol,' ',file_target,' ',file_xfm_tmp,' -xcorr  -source_mask ',file_mask_target,' -model_mask ',file_mask_target,' -forward -transformation ',file_xfm_tmp,' -clobber -lsq6 -speckle 0 -est_center -tol ',num2str(opt.tol,7),' -',opt.interp,' -simplex 10 -model_lattice -step ',num2str(opt.step),' ',num2str(opt.step),' ',num2str(opt.step));
+    instr_minctracc = cat(2,'minctracc ',file_vol,' ',file_target,' ',file_xfm_tmp,' -xcorr  -source_mask ',file_mask_target,' -model_mask ',file_mask_target,' -forward -transformation identity.xfm -clobber -lsq6 -speckle 0 -est_center -tol ',num2str(opt.tol,7),' -',opt.interp,' -simplex 10 -model_lattice -step ',num2str(opt.step),' ',num2str(opt.step),' ',num2str(opt.step));
     if (num_v == 1)
-        [fail,msg] = system(cat(2,'param2xfm ',file_xfm_tmp,' -translation 0 0 0 -rotations 0 0 0 -clobber'));
-        if (opt.chained==false)
-            disp('NO CHAINED INIT')
-            [fail,msg] = system(cat(2,'param2xfm identity.xfm -translation 0 0 0 -rotations 0 0 0 -clobber'));
-            instr_minctracc = cat(2,'minctracc ',file_vol,' ',file_target,' ',file_xfm_tmp,' -xcorr  -source_mask ',file_mask_target,' -model_mask ',file_mask_target,' -forward -transformation identity.xfm -clobber -lsq6 -speckle 0 -est_center -tol ',num2str(opt.tol,7),' -',opt.interp,' -simplex 10 -model_lattice -step ',num2str(opt.step),' ',num2str(opt.step),' ',num2str(opt.step));
-        else
-            disp('CHAINED INIT')
-        end
-
+        [fail,msg] = system(cat(2,'param2xfm identity.xfm -translation 0 0 0 -rotations 0 0 0 -clobber'));
         if fail
             error('There was a problem with PARAM2XFM : %s',msg)
         end

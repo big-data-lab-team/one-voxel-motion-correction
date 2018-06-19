@@ -1,14 +1,10 @@
 {
-    "command-line": "ovmc [ALGORITHM] [DATASET] [OUTPUT_FILE_NAME]",
+    "command-line": "ovmc [ALGORITHM] [DATASET] [DATASET_PERTURBATED] [OUTPUT_BASE_NAME]",
     "container-image": {
         "image": "bigdatalabteam/one-voxel-motion-correction:latest",
         "type": "docker"
     },
-    "environment-variables": [
-        {"name": "FSLOUTPUTTYPE",
-	 "value": "NIFTI_GZ"}
-    ],
-    "description": "mcflirt motion estimation as used in ovmc experiment.",
+    "description": "Wrapper for ovmc experiment.",
     "inputs": [
         {
             "id": "dataset",
@@ -17,10 +13,16 @@
             "value-key": "[DATASET]"
         },
         {
-            "id": "output_file_name",
-            "name": "Output file name",
+            "id": "dataset_perturbated",
+            "name": "The fMRI sequence to process, perturbate with one-voxel.",
+            "type": "File",
+            "value-key": "[DATASET_PERTURBATED]"
+        },
+        {
+            "id": "output_base_name",
+            "name": "Output base name",
             "type": "String",
-            "value-key": "[OUTPUT_FILE_NAME]"
+            "value-key": "[OUTPUT_BASE_NAME]"
         },
         {
             "id": "algorithm",
@@ -34,42 +36,77 @@
     "output-files": [
         {
             "id": "par_file",
-            "name": "Parameter file produced by motion correction",
+            "name": "Parameter file produced by motion correction (original dataset)",
             "optional": false,
-            "path-template": "[OUTPUT_FILE_NAME]"
+            "path-template": "[OUTPUT_BASE_NAME].par"
+        },
+        {
+            "id": "fd_file",
+            "name": "Frame displacement file produced by motion correction (original dataset)",
+            "optional": false,
+            "path-template": "[OUTPUT_BASE_NAME].fd"
+        },
+        {
+            "id": "par_file_perturbated",
+            "name": "Parameter file produced by motion correction (perturbated dataset)",
+            "optional": false,
+            "path-template": "[OUTPUT_BASE_NAME]_perturbated.par"
+        },
+        {
+            "id": "fd_file_perturbated",
+            "name": "Frame displacement file produced by motion correction (perturbated dataset)",
+            "optional": false,
+            "path-template": "[OUTPUT_BASE_NAME]_perturbated.fd"
+        },
+        {
+            "id": "par_file_diff",
+            "name": "Parameter file produced by motion correction (diff between datasets)",
+            "optional": false,
+            "path-template": "[OUTPUT_BASE_NAME]_diff.par"
+        },
+        {
+            "id": "fd_file_diff",
+            "name": "Frame displacement file produced by motion correction (diff between datasets)",
+            "optional": false,
+            "path-template": "[OUTPUT_BASE_NAME]_diff.fd"
         }
     ],
     "tests": [
         {
-            "name": "test-mcflirt-ovmc",
+            "name": "test-mcflirt",
             "invocation": {
                 "algorithm": "mcflirt",
-                "output_file_name": "output",
-                "dataset": "/test/test.nii.gz"
+                "output_base_name": "output",
+                "dataset": "/test/test.nii.gz",
+                "dataset_perturbated": "/test/test_one_voxel.nii.gz"
             },
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
                     "id": "par_file",
-                    "md5-reference": "0b3cb6406ac8ec34042ae2c7a480dba6"
+                    "md5-reference": "b347b8ab329ac6c66206fd0d75278312"
+                },
+                {
+                    "id": "fd_file",
+                    "md5-reference": "6bee7330d7848d87f5ad27fe2ad7c6eb"
+                },
+                {
+                    "id": "par_file_perturbated",
+                    "md5-reference": "de9fbc5031646008347d1c34eef272eb"
+                },
+                {
+                    "id": "fd_file_perturbated",
+                    "md5-reference": "0dc5922f9c57b8c8b54c127948d6563b"
+                },
+                {
+                    "id": "par_file_diff",
+                    "md5-reference": "e7ff63598ab52606030ae76c72e8dbfb"
+                },
+                {
+                    "id": "fd_file_diff",
+                    "md5-reference": "2b3eca640bdabff1368a8459eca75220"
                 }
-				]
-            }
-        },
-        {
-            "name": "test-mcflirt-fudge-ovmc",
-            "invocation": {
-                "algorithm": "mcflirt_fudge",
-                "output_file_name": "output",
-                "dataset": "/test/test.nii.gz"
-            },
-            "assertions": {
-                "exit-code": 0,
-                "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "0b3cb6406ac8ec34042ae2c7a480dba6"
-                }
-				]
+                ]
             }
         }
     ],
