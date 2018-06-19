@@ -29,7 +29,7 @@
             "name": "Motion estimation algorithm",
             "type": "String",
             "value-key": "[ALGORITHM]",
-            "value-choices": ["mcflirt", "mcflirt_fudge", "niaklike", "niaklike_no_chained_init", "spm"]
+            "value-choices": ["mcflirt", "mcflirt_fudge", "niak", "niak_no_chained_init", "spm", "afni"]
         }
     ],
     "name": "ovmc",
@@ -105,6 +105,154 @@
                 {
                     "id": "fd_file_diff",
                     "md5-reference": "2b3eca640bdabff1368a8459eca75220"
+                }
+                ]
+            }
+        },
+        {
+            "name": "test-mcflirt-fudge",
+            "invocation": {
+                "algorithm": "mcflirt_fudge",
+                "output_base_name": "output",
+                "dataset": "/test/test.nii.gz",
+                "dataset_perturbated": "/test/test_one_voxel.nii.gz"
+            },
+            "assertions": {
+                "exit-code": 0,
+                "output-files": [ {
+                    "id": "par_file",
+                    "md5-reference": "14ebbcb4614c3952a46e0d0203445209"
+                },
+                {
+                    "id": "fd_file",
+                    "md5-reference": "c0cd813f38db6f7c90ca255e841a544e"
+                },
+                {
+                    "id": "par_file_perturbated",
+                    "md5-reference": "5a312a6fd8693a3d49da21d863049f51"
+                },
+                {
+                    "id": "fd_file_perturbated",
+                    "md5-reference": "d288501378de3e9a2a29f2b528d07262"
+                },
+                {
+                    "id": "par_file_diff",
+                    "md5-reference": "dad1268273c9ad85c4463e40910c6cc7"
+                },
+                {
+                    "id": "fd_file_diff",
+                    "md5-reference": "b780dd62b7ca75bc39ffcf2b078b55e0"
+                }
+                ]
+            }
+        },
+        {
+            "name": "test-afni",
+            "invocation": {
+                "algorithm": "afni",
+                "output_base_name": "output",
+                "dataset": "/test/test.nii.gz",
+                "dataset_perturbated": "/test/test_one_voxel.nii.gz"
+            },
+            "assertions": {
+                "exit-code": 0,
+                "output-files": [ {
+                    "id": "par_file",
+                    "md5-reference": "d216b4f93a01e847031987d3bede682f"
+                },
+                {
+                    "id": "fd_file",
+                    "md5-reference": "68ebe4446a70122cc09c1e150f1f6a05"
+                },
+                {
+                    "id": "par_file_perturbated",
+                    "md5-reference": "6916a119eb5809073c791c179e3be98b"
+                },
+                {
+                    "id": "fd_file_perturbated",
+                    "md5-reference": "87eb422d9a3783d1a0cbc4116a52caa8"
+                },
+                {
+                    "id": "par_file_diff",
+                    "md5-reference": "9d683a893ca320f6f22ec6e1215fb4ca"
+                },
+                {
+                    "id": "fd_file_diff",
+                    "md5-reference": "dcb3e8cfe82d3b1c1e7bcd4be991c95a"
+                }
+                ]
+            }
+        },
+        {
+            "name": "test-niak",
+            "invocation": {
+                "algorithm": "niak",
+                "output_base_name": "output",
+                "dataset": "/test/test.nii.gz",
+                "dataset_perturbated": "/test/test_one_voxel.nii.gz"
+            },
+            "assertions": {
+                "exit-code": 0,
+                "output-files": [ {
+                    "id": "par_file",
+                    "md5-reference": "b4a6d88c98edfbeb921fe855a3a38348"
+                },
+                {
+                    "id": "fd_file",
+                    "md5-reference": "3445796a460c5b29657a5a13092b6b33"
+                },
+                {
+                    "id": "par_file_perturbated",
+                    "md5-reference": "68b05c088316fc6a7e174d61058d9dc6"
+                },
+                {
+                    "id": "fd_file_perturbated",
+                    "md5-reference": "749b1974e113dc4fd80917859a17b199"
+                },
+                {
+                    "id": "par_file_diff",
+                    "md5-reference": "85ec26e8e2e06cc2f234eca4d29fd572"
+                },
+                {
+                    "id": "fd_file_diff",
+                    "md5-reference": "9738cbf20a53b487bd742d8b81ae852e"
+                }
+                ]
+            }
+        },
+        {
+            "name": "test-niak-no-chained-init",
+            "invocation": {
+                "algorithm": "niak_no_chained_init",
+                "output_base_name": "output",
+                "dataset": "/test/test.nii.gz",
+                "dataset_perturbated": "/test/test_one_voxel.nii.gz"
+            },
+            "assertions": {
+                "exit-code": 0,
+                "output-files": [ {
+                    "id": "par_file",
+                    "md5-reference": "3d0aed200d79a820863db7888dab4617"
+                },
+                {
+                    "id": "fd_file",
+                    "md5-reference": "93dffe144951a87ff90ff231e22ba863"
+                },
+                {
+                    "id": "par_file_perturbated",
+                    "md5-reference": "741abccf569956b457beaa05a9350b6b"
+                },
+                {
+                    "id": "fd_file_perturbated",
+                    "md5-reference": "bc3c25954925215bf9110f718e77a8f4"
+                },
+                {
+                    "id": "par_file_diff",
+                    "md5-reference": "1818e91c12f2f5f5b3925a4ebf909c6d"
+                },
+                {
+                    "id": "fd_file_diff",
+                    "md5-reference": "6de1bc7c4549ae3e9a2081070e6fcb42"
                 }
                 ]
             }

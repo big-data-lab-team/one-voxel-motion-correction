@@ -31,5 +31,6 @@ ADD test/data/test_one_voxel.nii.gz /test
 # OVMC
 ADD ovmc /ovmc/ovmc
 ADD setup.py /ovmc
+ADD MANIFEST.in
 RUN pip install virtualenv && virtualenv --python=python3 /env &&\
     . /env/bin/activate && (cd /ovmc && ls && pip install .)
