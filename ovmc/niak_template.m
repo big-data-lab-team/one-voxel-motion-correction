@@ -5,7 +5,7 @@ opt.folder_out = '[FOLDER_OUT]';
 niak_pipeline_motion[CHAINED](files_in, opt);
 
 transfos = load('[FOLDER_OUT]/motion_parameters_subject_subject_run.mat');
-param = zeros(length([N_VOLS]),6);
+param = zeros([N_VOLS],6);
 # Copied from SPM brick
 for i=1:[N_VOLS]
     [rot,tsl] = niak_transf2param(transfos.transf(:,:,i));

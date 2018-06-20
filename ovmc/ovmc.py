@@ -53,14 +53,27 @@ def write_params(params, param_file):
                      os.linesep)
 
 
+def compute_fd(params, previous_params):
+    # convert angles to mm
+    for i in range(3, 6):
+        params[i] = params[i] * math.pi/180.0 * 50
+        previous_params[i] = previous_params[i] * math.pi/180.0 * 50
+    absdiff = [abs(params[i]-previous_params[i]) for i in range(0, 6)]
+    return sum(absdiff)
+
+
 def write_fds(transfo_file):
     fd_file_name = os.path.splitext(transfo_file)[0] + '.fd'
     with open(transfo_file) as f:
         transfos = f.readlines()
     with open(fd_file_name, 'w') as fd_file:
-        for t in transfos:
-            transfo = parse_transfo(t)
-            fd = tu.framewise_displacement(transfo)
+        pt = None  # params at the previous time point
+        for transfo_line in transfos:
+            t = parse_transfo(transfo_line)
+            fd = "NaN"  # FD is undefined for the first volume
+            if pt is not None:
+                fd = compute_fd(t, pt)
+            pt = t
             fd_file.write(str(fd)+os.linesep)
 
 
@@ -75,9 +88,13 @@ def convert_from_mcflirt(mcflirt_file, standard_file):
         transfos = f.readlines()
     with open(standard_file, 'w') as f:
         for t in transfos:
+            # mcflirt produces files formated as rx, ry, rz, x, y, z
+            # with the rotation angles in radians
             [rx, ry, rz, x, y, z] = parse_transfo(t)
-            write_params([rx*180.0/math.pi, ry*180.0/math.pi, rz*180.0/math.pi,
-                          x, y, z], f)
+            write_params([x, y, z,
+                          rx*180.0/math.pi,
+                          ry*180.0/math.pi,
+                          rz*180.0/math.pi], f)
 
 
 # Motion estimation
@@ -154,8 +171,10 @@ def mcflirt(dataset, output_file_name, fudge=False):
     if fudge:
         command += " -fudge"
     run_command(command)
-    convert_from_mcflirt(output_file_name + '_mcflirt.par', output_file_name + '.par')
-    cleanup([output_file_name + '.nii.gz', output_file_name + '_mcflirt.par'])
+    convert_from_mcflirt(output_file_name + '_mcflirt.par',
+                         output_file_name + '.par')
+    cleanup([output_file_name + '_mcflirt.nii.gz',
+             output_file_name + '_mcflirt.par'])
     return [output_file_name + '.par']
 
 
@@ -224,6 +243,8 @@ def bootstrap_algo(algo_func, n_samples, dataset, output_name):
         output_transfo_file = "{}_average_{}.par".format(output_name, n)
         write_average(output_files, output_transfo_file)
         averages.append(output_transfo_file)
+
+        cleanup([noised_image])
     return averages
 
 # Parsing
@@ -289,7 +310,8 @@ def main():
         args.output_name + '_diff.fd'
     ]
     if args.bootstrap:
-        for i in range(0, args.bootstrap):
+        output_files = []
+        for i in range(0, int(args.bootstrap)):
             output_files.append(args.output_name +
                                 '_iter_{}.par'.format(str(i)))
             output_files.append(args.output_name +
@@ -298,6 +320,14 @@ def main():
                                 '_iter_{}.fd'.format(str(i)))
             output_files.append(args.output_name +
                                 '_average_{}.fd'.format(str(i)))
+            output_files.append(args.output_name +
+                                '_perturbated_iter_{}.par'.format(str(i)))
+            output_files.append(args.output_name +
+                                '_perturbated_average_{}.par'.format(str(i)))
+            output_files.append(args.output_name +
+                                '_perturbated_iter_{}.fd'.format(str(i)))
+            output_files.append(args.output_name +
+                                '_perturbated_average_{}.fd'.format(str(i)))
     cleanup(output_files)
 
     # Original dataset
@@ -323,19 +353,17 @@ def main():
         assert(len(transfos_1) == len(transfos_2))
         # Compute the differences
         output_name = os.path.splitext(results_original[i])[0]
-        with open(output_name + '_diff.fd', 'w') as fd_file:
-            with open(output_name + '_diff.par', 'w') as par_file:
-                for i in range(0, len(transfos_1)):
-                    # Compute difference transfo (T1oT2-1)
-                    t1 = parse_transfo(transfos_1[i])
-                    t2 = parse_transfo(transfos_2[i])
-                    diff = tu.diff_transfos(tu.get_transfo_mat(t1),
-                                            tu.get_transfo_mat(t2))
-                    # Write parameters
-                    write_params(diff, par_file)
-                    # Write FDs
-                    fd = tu.framewise_displacement(diff)
-                    fd_file.write(str(fd)+os.linesep)
+        with open(output_name + '_diff.par', 'w') as par_file:
+            for i in range(0, len(transfos_1)):
+                # Compute difference transfo (T1oT2-1)
+                t1 = parse_transfo(transfos_1[i])
+                t2 = parse_transfo(transfos_2[i])
+                diff = tu.diff_transfos(tu.get_transfo_mat(t1),
+                                        tu.get_transfo_mat(t2))
+                # Write parameters
+                write_params(diff, par_file)
+            # Write FDs
+        write_fds(output_name + '_diff.par')
 
 
 if __name__ == '__main__':
