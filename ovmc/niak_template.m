@@ -1,6 +1,7 @@
 files_in = {};
 files_in.subject.run = '[DATASET]';
 opt = {};
+opt.vol_ref = 1;
 opt.folder_out = '[FOLDER_OUT]';
 niak_pipeline_motion[CHAINED](files_in, opt);
 

@@ -165,7 +165,7 @@ def mcflirt_fudge(dataset, output_file_name):
 def mcflirt(dataset, output_file_name, fudge=False):
     # Run mcflirt
     output_file_name = output_file_name.replace('.par', '')
-    command = ("mcflirt -in {} -out {} "
+    command = ("mcflirt -in {} -out {} -refvol 0"
                " -plots".format(dataset, output_file_name + '_mcflirt'))
     if fudge:
         command += " -fudge"
@@ -178,9 +178,8 @@ def mcflirt(dataset, output_file_name, fudge=False):
 
 
 def afni(dataset, output_file_name):
-    command = ("3dvolreg -1Dfile {} -base {} {}".format(output_file_name,
-                                                        int(n_vols(dataset)/2),
-                                                        dataset))
+    command = ("3dvolreg -1Dfile {} -base 0 {}".format(output_file_name,
+                                                       dataset))
     run_command(command)
     cleanup(['volreg+orig.HEAD', 'volreg+orig.BRIK'])
     return [output_file_name]
