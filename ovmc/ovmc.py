@@ -13,7 +13,7 @@ from ovmc import transfo_utils as tu
 from ovmc import one_voxel as ov
 import tempfile
 import nibabel
-import pdb
+import math
 
 # Utils
 
@@ -70,66 +70,72 @@ def cleanup(files):
             os.remove(f)
 
 
+def convert_from_mcflirt(mcflirt_file, standard_file):
+    with open(mcflirt_file) as f:
+        transfos = f.readlines()
+    with open(standard_file, 'w') as f:
+        for t in transfos:
+            [rx, ry, rz, x, y, z] = parse_transfo(t)
+            write_params([rx*180.0/math.pi, ry*180.0/math.pi, rz*180.0/math.pi,
+                          x, y, z], f)
+
+
 # Motion estimation
 
-
-def spm(dataset, output_file_name):
-    path, fil = os.path.split(__file__)
-    template_file = os.path.join(path, "spm_template.m")
-
+def templated_octave_algo(template_file, substitutions):
     with open(template_file) as f:
         template_string = f.read()
-
-    temp_file_1 = tempfile.NamedTemporaryFile(delete=False)
-    temp_file_2 = tempfile.NamedTemporaryFile(delete=False)
-
-    template_string = template_string.replace('[SPM_INSTALL]', '/spm12')
-    template_string = template_string.replace('[DATASET]', dataset)
-    template_string = template_string.replace('[OUTPUT_FILE_NAME]',
-                                              output_file_name)
-    template_string = template_string.replace('[TEMP_FILE_1]', temp_file_1.name)
-    template_string = template_string.replace('[TEMP_FILE_2]', temp_file_2.name)
+    for key in substitutions.keys():
+        template_string = template_string.replace(key, substitutions[key])
     script_file = tempfile.NamedTemporaryFile(delete=False)
     script_file.write(template_string.encode())
     script_file.close()
     run_command("octave {}".format(script_file.name))
+    cleanup([script_file.name])
+
+
+def spm(dataset, output_file_name):
+
+    path, fil = os.path.split(__file__)
+    template_file = os.path.join(path, "spm_template.m")
+    temp_file_1 = tempfile.NamedTemporaryFile(delete=False)
+    temp_file_2 = tempfile.NamedTemporaryFile(delete=False)
+
+    substitutions = {
+        '[SPM_INSTALL]': '/spm12',
+        '[DATASET]': dataset,
+        '[OUTPUT_FILE_NAME]': output_file_name,
+        '[TEMP_FILE_1]': temp_file_1.name,
+        '[TEMP_FILE_2]': temp_file_2.name
+    }
+
+    templated_octave_algo(template_file, substitutions)
     assert(os.path.exists(output_file_name))
-    os.unlink(script_file.name)
-    os.unlink(temp_file_1.name)
-    os.unlink(temp_file_2.name)
-    return output_file_name
+    cleanup([temp_file_1.name, temp_file_2.name])
+    return [output_file_name]
 
 
 def niak(dataset, output_file_name, chained=True):
     path, fil = os.path.split(__file__)
     template_file = os.path.join(path, "niak_template.m")
     tempdir = tempfile.mkdtemp()
-
-    with open(template_file) as f:
-        template_string = f.read()
-
     n_volumes = n_vols(dataset)
-    template_string = template_string.replace('[DATASET]', dataset)
-    template_string = template_string.replace('[FOLDER_OUT]', tempdir)
-    template_string = template_string.replace('[N_VOLS]', str(n_volumes))
-    if chained:
-        template_string = template_string.replace('[CHAINED]', '')
-    else:
-        template_string = template_string.replace('[CHAINED]', '_no_chained')
-    script_file = tempfile.NamedTemporaryFile(delete=False)
-    script_file.write(template_string.encode())
-    script_file.close()
-    run_command("octave {}".format(script_file.name))
 
-    # Put the results in the right format and file
-    with open(output_file_name, 'w') as output_file:
-        for i in range(1, n_volumes+1):
-            output_transfo = os.path.join(tempdir, 'transf_{}.xfm'.format(i))
-            transfo = tu.read_transfo(output_transfo)
-            transfo_vector = tu.get_transfo_vector(transfo)
-            write_params(transfo_vector, output_file)
+    substitutions = {
+        '[DATASET]': dataset,
+        '[FOLDER_OUT]': tempdir,
+        '[N_VOLS]': str(n_volumes),
+        '[OUTPUT_FILE]': output_file_name
+    }
+    if chained:
+        substitutions['[CHAINED]'] = ''
+    else:
+        substitutions['[CHAINED]'] = '_no_chained'
+
+    templated_octave_algo(template_file, substitutions)
+
     cleanup(['identity.xfm'])
-    return output_file_name
+    return [output_file_name]
 
 
 def niak_no_chained_init(dataset, output_file_name):
@@ -144,12 +150,13 @@ def mcflirt(dataset, output_file_name, fudge=False):
     # Run mcflirt
     output_file_name = output_file_name.replace('.par', '')
     command = ("mcflirt -in {} -out {} "
-               " -plots".format(dataset, output_file_name))
+               " -plots".format(dataset, output_file_name + '_mcflirt'))
     if fudge:
         command += " -fudge"
     run_command(command)
-    cleanup([output_file_name + '.nii.gz'])
-    return output_file_name
+    convert_from_mcflirt(output_file_name + '_mcflirt.par', output_file_name + '.par')
+    cleanup([output_file_name + '.nii.gz', output_file_name + '_mcflirt.par'])
+    return [output_file_name + '.par']
 
 
 def afni(dataset, output_file_name):
@@ -158,7 +165,7 @@ def afni(dataset, output_file_name):
                                                         dataset))
     run_command(command)
     cleanup(['volreg+orig.HEAD', 'volreg+orig.BRIK'])
-    return output_file_name
+    return [output_file_name]
 
 
 # Bootstrap
