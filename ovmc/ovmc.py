@@ -56,8 +56,8 @@ def write_params(params, param_file):
 def compute_fd(params, previous_params):
     # convert angles to mm
     for i in range(3, 6):
-        params[i] = params[i] * math.pi/180.0 * 50
-        previous_params[i] = previous_params[i] * math.pi/180.0 * 50
+        params[i] = (params[i] / 360) * 2 * math.pi * 50
+        previous_params[i] = (previous_params[i] / 360) * 2 * math.pi * 50
     absdiff = [abs(params[i]-previous_params[i]) for i in range(0, 6)]
     return sum(absdiff)
 
@@ -70,11 +70,10 @@ def write_fds(transfo_file):
         pt = None  # params at the previous time point
         for transfo_line in transfos:
             t = parse_transfo(transfo_line)
-            fd = "NaN"  # FD is undefined for the first volume
             if pt is not None:
                 fd = compute_fd(t, pt)
+                fd_file.write(str(fd)+os.linesep)
             pt = t
-            fd_file.write(str(fd)+os.linesep)
 
 
 def cleanup(files):
