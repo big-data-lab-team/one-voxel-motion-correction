@@ -1,0 +1,61 @@
+set terminal png enhanced
+
+set output "plots/all_algos_fd.png"
+
+set xlabel "Volumes"
+
+dirname='.'
+
+set ylabel "FD (mm)"
+
+plot sprintf('%s/output_mcflirt.fd', dirname) title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm.fd', dirname) title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni.fd', dirname) title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak.fd', dirname) title "NIAK" w lines lt 7
+
+set output "plots/all_algos_diff.png"
+set ylabel "FD difference (mm)"
+
+plot sprintf('%s/output_mcflirt_diff.fd', dirname) title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm_diff.fd', dirname) title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni_diff.fd', dirname) title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak_diff.fd', dirname) title "NIAK" w lines lt 7,\
+     sprintf('%s/output_niak_no_chained_init_diff.fd', dirname) title "NIAK (no chained)" w lines lt 8
+
+
+set output "plots/all_algos_params.png"
+set ylabel "x (mm)"
+plot sprintf('%s/output_mcflirt.par', dirname) u 1 title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm.par', dirname) u 1 title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni.par', dirname) u 1 title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak.par', dirname) u 1 title "NIAK" w lines lt 7
+
+set ylabel "y (mm)"
+plot sprintf('%s/output_mcflirt.par', dirname) u 2 title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm.par', dirname) u 2 title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni.par', dirname) u 2 title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak.par', dirname) u 2 title "NIAK" w lines lt 7
+
+set ylabel "z (mm)"
+plot sprintf('%s/output_mcflirt.par', dirname) u 3 title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm.par', dirname) u 3 title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni.par', dirname) u 3 title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak.par', dirname) u 3 title "NIAK" w lines lt 7
+
+set ylabel "rx (deg)"
+plot sprintf('%s/output_mcflirt.par', dirname) u 4 title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm.par', dirname) u 4 title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni.par', dirname) u 4 title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak.par', dirname) u 4 title "NIAK" w lines lt 7
+
+set ylabel "ry (deg)"
+plot sprintf('%s/output_mcflirt.par', dirname) u 5 title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm.par', dirname) u 5 title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni.par', dirname) u 5 title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak.par', dirname) u 5 title "NIAK" w lines lt 7
+
+set ylabel "rz (deg)"
+plot sprintf('%s/output_mcflirt.par', dirname) u 6 title "FSL" w lines lt 1,\
+     sprintf('%s/output_spm.par', dirname) u 6 title "SPM" w lines lt 3,\
+     sprintf('%s/output_afni.par', dirname) u 6 title "AFNI" w lines lt 4,\
+     sprintf('%s/output_niak.par', dirname) u 6 title "NIAK" w lines lt 7
