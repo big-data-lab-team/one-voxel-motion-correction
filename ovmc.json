@@ -76,7 +76,7 @@
             "name": "test-mcflirt",
             "invocation": {
                 "algorithm": "mcflirt",
-                "output_base_name": "output",
+                "output_base_name": "output_mcflirt",
                 "dataset": "/test/test.nii.gz",
                 "dataset_perturbated": "/test/test_one_voxel.nii.gz"
             },
@@ -113,7 +113,7 @@
             "name": "test-mcflirt-fudge",
             "invocation": {
                 "algorithm": "mcflirt_fudge",
-                "output_base_name": "output",
+                "output_base_name": "output_mcflirt_fudge",
                 "dataset": "/test/test.nii.gz",
                 "dataset_perturbated": "/test/test_one_voxel.nii.gz"
             },
@@ -150,7 +150,7 @@
             "name": "test-afni",
             "invocation": {
                 "algorithm": "afni",
-                "output_base_name": "output",
+                "output_base_name": "output_afni",
                 "dataset": "/test/test.nii.gz",
                 "dataset_perturbated": "/test/test_one_voxel.nii.gz"
             },
@@ -187,7 +187,7 @@
             "name": "test-niak",
             "invocation": {
                 "algorithm": "niak",
-                "output_base_name": "output",
+                "output_base_name": "output_niak",
                 "dataset": "/test/test.nii.gz",
                 "dataset_perturbated": "/test/test_one_voxel.nii.gz"
             },
@@ -224,7 +224,7 @@
             "name": "test-niak-no-chained-init",
             "invocation": {
                 "algorithm": "niak_no_chained_init",
-                "output_base_name": "output",
+                "output_base_name": "output_niak_no_chained_init",
                 "dataset": "/test/test.nii.gz",
                 "dataset_perturbated": "/test/test_one_voxel.nii.gz"
             },
@@ -261,7 +261,7 @@
             "name": "test-spm",
             "invocation": {
                 "algorithm": "spm",
-                "output_base_name": "output",
+                "output_base_name": "output_spm",
                 "dataset": "/test/test.nii.gz",
                 "dataset_perturbated": "/test/test_one_voxel.nii.gz"
             },

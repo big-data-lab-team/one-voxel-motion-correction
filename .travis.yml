@@ -16,6 +16,7 @@ python:
 
 before_install:
 - cd ${TRAVIS_BUILD_DIR}
+- docker build -t bigdatalabteam/one-voxel-motion-correction:latest .
 
 install:
 - pip install --upgrade setuptools
