@@ -62,4 +62,4 @@ sensitive to the one-voxel perturbation, while AFNI and SPM are not.
 This is due to the use of chained initializations (between volumes and 
 between resolutions) in FSL and Niak.
 
-[all_algos_diff_fd](https://github.com/big-data-lab-team/one-voxel-motion-correction/raw/master/plots/all_algos_diff_fd.png)
+[all_algos_diff_fd](https://github.com/big-data-lab-team/one-voxel-motion-correction/raw/master/plots/all_algos_diff.png)
