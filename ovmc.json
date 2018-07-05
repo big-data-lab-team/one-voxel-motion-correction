@@ -1,5 +1,5 @@
 {
-    "command-line": ". /env/bin/activate; ovmc [ALGORITHM] [DATASET] [DATASET_PERTURBATED] [OUTPUT_BASE_NAME]",
+    "command-line": ". /env/bin/activate; ovmc [ALGORITHM] [BOOTSTRAP] [DATASET] [DATASET_PERTURBATED] [OUTPUT_BASE_NAME]",
     "container-image": {
         "image": "bigdatalabteam/one-voxel-motion-correction:latest",
         "type": "docker"
@@ -30,6 +30,15 @@
             "type": "String",
             "value-key": "[ALGORITHM]",
             "value-choices": ["mcflirt", "mcflirt_fudge", "niak", "niak_no_chained_init", "spm", "afni"]
+        },
+        {
+            "id": "bootstrap",
+            "name": "Number of bootstrap iterations",
+            "type": "Number",
+            "integer": true,
+            "command-line-flag": "--bootstrap",
+            "optional": true,
+            "value-key": "[BOOTSTRAP]"
         }
     ],
     "name": "ovmc",

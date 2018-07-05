@@ -243,6 +243,10 @@ def bootstrap_algo(algo_func, n_samples, dataset, output_name):
         averages.append(output_transfo_file)
 
         cleanup([noised_image])
+    # Copy last iteration in final result
+    shutil.copyfile(output_transfo_file, output_name+".par")
+    averages.append(output_name+".par")
+
     return averages
 
 # Parsing
