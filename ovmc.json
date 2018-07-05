@@ -119,6 +119,44 @@
             }
         },
         {
+            "name": "test-mcflirt-bootstrap",
+            "invocation": {
+                "algorithm": "mcflirt",
+                "output_base_name": "output_mcflirt",
+                "dataset": "/test/test.nii.gz",
+                "dataset_perturbated": "/test/test_one_voxel.nii.gz",
+                "bootstrap": 3
+            },
+            "assertions": {
+                "exit-code": 0,
+                "output-files": [ {
+                    "id": "par_file",
+                    "md5-reference": "69f58b3ecf6f1d7dacdce33ef865f44b"
+                },
+                {
+                    "id": "fd_file",
+                    "md5-reference": "89e3fcf5cf016cf9ee2ddaa6bc4e5f34"
+                },
+                {
+                    "id": "par_file_perturbated",
+                    "md5-reference": "f05f4a886396d900816c96c861f896a9"
+                },
+                {
+                    "id": "fd_file_perturbated",
+                    "md5-reference": "28b0368cf984ae2cfd7c7e7a5a3d75c7"
+                },
+                {
+                    "id": "par_file_diff",
+                    "md5-reference": "111041f90f6f7a6e731b40ca96370cd7"
+                },
+                {
+                    "id": "fd_file_diff",
+                    "md5-reference": "5423eb465d5ea244d11c67f186261f5d"
+                }
+                ]
+            }
+        },
+        {
             "name": "test-mcflirt-fudge",
             "invocation": {
                 "algorithm": "mcflirt_fudge",
