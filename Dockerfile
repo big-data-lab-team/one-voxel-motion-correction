@@ -8,7 +8,7 @@ RUN apt-get install -y\
 
 # AFNI
 RUN (mkdir /usr/local/afni; cd /usr/local/afni;\
-     wget wget https://afni.nimh.nih.gov/pub/dist/tgz/linux_ubuntu_16_64.tgz ;\
+     wget https://afni.nimh.nih.gov/pub/dist/tgz/linux_ubuntu_16_64.tgz ;\
      tar zxvf linux_ubuntu_16_64.tgz ; rm linux_ubuntu_16_64.tgz)
 ENV PATH=$PATH:/usr/local/afni/linux_ubuntu_16_64
 
