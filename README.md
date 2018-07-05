@@ -57,7 +57,7 @@ which is reassuring.
 
 ### Stability to one-voxel perturbation
 
-This illustrate the main result of our study. FSL and Niak are quite 
+This illustrates the main result of our study. FSL and Niak are quite 
 sensitive to the one-voxel perturbation, while AFNI and SPM are not.
 This is due to the use of chained initializations (between volumes and 
 between resolutions) in FSL and Niak.
