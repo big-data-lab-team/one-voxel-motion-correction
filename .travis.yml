@@ -30,5 +30,3 @@ script:
 
 after_success:
 - coveralls
-
-deploy:
