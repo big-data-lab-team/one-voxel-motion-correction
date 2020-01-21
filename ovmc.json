@@ -92,28 +92,22 @@
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "a2137d0fac5e1b7703416714457d51dc"
+                    "id": "par_file"
                 },
                 {
-                    "id": "fd_file",
-                    "md5-reference": "c18d1aacdc34c817e5a29cdcefea59ad"
+                    "id": "fd_file"
                 },
                 {
-                    "id": "par_file_perturbated",
-                    "md5-reference": "e9192dfab9bf20724959510af1fddf77"
+                    "id": "par_file_perturbated"
                 },
                 {
-                    "id": "fd_file_perturbated",
-                    "md5-reference": "b1d397eb4cf99711f4e94635670eef2f"
+                    "id": "fd_file_perturbated"
                 },
                 {
-                    "id": "par_file_diff",
-                    "md5-reference": "be35a8a3fdcb1587487234550e43ba8f"
+                    "id": "par_file_diff"
                 },
                 {
-                    "id": "fd_file_diff",
-                    "md5-reference": "83ce6eb25c7a729aed03040d63cc60a0"
+                    "id": "fd_file_diff"
                 }
                 ]
             }
@@ -130,28 +124,22 @@
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "69f58b3ecf6f1d7dacdce33ef865f44b"
+                    "id": "par_file"
                 },
                 {
-                    "id": "fd_file",
-                    "md5-reference": "89e3fcf5cf016cf9ee2ddaa6bc4e5f34"
+                    "id": "fd_file"
                 },
                 {
-                    "id": "par_file_perturbated",
-                    "md5-reference": "f05f4a886396d900816c96c861f896a9"
+                    "id": "par_file_perturbated"
                 },
                 {
-                    "id": "fd_file_perturbated",
-                    "md5-reference": "28b0368cf984ae2cfd7c7e7a5a3d75c7"
+                    "id": "fd_file_perturbated"
                 },
                 {
-                    "id": "par_file_diff",
-                    "md5-reference": "111041f90f6f7a6e731b40ca96370cd7"
+                    "id": "par_file_diff"
                 },
                 {
-                    "id": "fd_file_diff",
-                    "md5-reference": "5423eb465d5ea244d11c67f186261f5d"
+                    "id": "fd_file_diff"
                 }
                 ]
             }
@@ -167,28 +155,22 @@
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "8ce81be9309c78d15bb2be92deaa712e"
+                    "id": "par_file"
                 },
                 {
-                    "id": "fd_file",
-                    "md5-reference": "ad4c82251fdbc3c3f2f18dd42fbdc4e7"
+                    "id": "fd_file"
                 },
                 {
-                    "id": "par_file_perturbated",
-                    "md5-reference": "51ac4a25aa9804cbc6d8ad40440a9651"
+                    "id": "par_file_perturbated"
                 },
                 {
-                    "id": "fd_file_perturbated",
-                    "md5-reference": "a05a57df1211c80a80ebbfa97139b7dd"
+                    "id": "fd_file_perturbated"
                 },
                 {
-                    "id": "par_file_diff",
-                    "md5-reference": "2384a7baff1e360b5d25942f790d537f"
+                    "id": "par_file_diff"
                 },
                 {
-                    "id": "fd_file_diff",
-                    "md5-reference": "c90a155172a45f0bb7e0138b1db505af"
+                    "id": "fd_file_diff"
                 }
                 ]
             }
@@ -204,28 +186,22 @@
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "b83e017768954c6908f4ed4aa27a4f21"
+                    "id": "par_file"
                 },
                 {
-                    "id": "fd_file",
-                    "md5-reference": "8135b3fdc892a76149d224fce7cf8985"
+                    "id": "fd_file"
                 },
                 {
-                    "id": "par_file_perturbated",
-                    "md5-reference": "8fbcf31ccb11fd8990a970f774929bc6"
+                    "id": "par_file_perturbated"
                 },
                 {
-                    "id": "fd_file_perturbated",
-                    "md5-reference": "4354787bc131af6f3c857df2392eb82b"
+                    "id": "fd_file_perturbated"
                 },
                 {
-                    "id": "par_file_diff",
-                    "md5-reference": "11618ce5eaed80c5b10ec8e7ac6c8a2c"
+                    "id": "par_file_diff"
                 },
                 {
-                    "id": "fd_file_diff",
-                    "md5-reference": "770fbaab355967e29645a3acfa0f4490"
+                    "id": "fd_file_diff"
                 }
                 ]
             }
@@ -241,28 +217,22 @@
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "9017539964b6b40e175b983ba3bbacdc"
+                    "id": "par_file"
                 },
                 {
-                    "id": "fd_file",
-                    "md5-reference": "6e904dd78820a3c4262e499b73fe05a6"
+                    "id": "fd_file"
                 },
                 {
-                    "id": "par_file_perturbated",
-                    "md5-reference": "24523eb1ab3990301e31a4fce7f70840"
+                    "id": "par_file_perturbated"
                 },
                 {
-                    "id": "fd_file_perturbated",
-                    "md5-reference": "c4b4d2f1a85463c529277ddcf060d3b4"
+                    "id": "fd_file_perturbated"
                 },
                 {
-                    "id": "par_file_diff",
-                    "md5-reference": "6eafda46ac6b4c86851f761ccb5f6e47"
+                    "id": "par_file_diff"
                 },
                 {
-                    "id": "fd_file_diff",
-                    "md5-reference": "40cb453a9b148f9ce2dcf205c3275311"
+                    "id": "fd_file_diff"
                 }
                 ]
             }
@@ -278,28 +248,22 @@
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "6d2c938147b0ca07a854d876d071c3c0"
+                    "id": "par_file"
                 },
                 {
-                    "id": "fd_file",
-                    "md5-reference": "d6e17e726a229f4b77bf650d4848c46f"
+                    "id": "fd_file"
                 },
                 {
-                    "id": "par_file_perturbated",
-                    "md5-reference": "9064a2eec857e0aa8af07d2fde507aed"
+                    "id": "par_file_perturbated"
                 },
                 {
-                    "id": "fd_file_perturbated",
-                    "md5-reference": "c5ea412553a59ce9243be8849e8c9d78"
+                    "id": "fd_file_perturbated"
                 },
                 {
-                    "id": "par_file_diff",
-                    "md5-reference": "7abfef691632273c137eeef3524fb415"
+                    "id": "par_file_diff"
                 },
                 {
-                    "id": "fd_file_diff",
-                    "md5-reference": "8ee1f3b25de952ddbe41df9233c1778c"
+                    "id": "fd_file_diff"
                 }
                 ]
             }
@@ -315,28 +279,22 @@
             "assertions": {
                 "exit-code": 0,
                 "output-files": [ {
-                    "id": "par_file",
-                    "md5-reference": "1a424bea6c77713ed2f997cad85f6792"
+                    "id": "par_file"
                 },
                 {
-                    "id": "fd_file",
-                    "md5-reference": "8357b3903039a886788494f802532387"
+                    "id": "fd_file"
                 },
                 {
-                    "id": "par_file_perturbated",
-                    "md5-reference": "23d9b81920c4778be903564971daf981"
+                    "id": "par_file_perturbated"
                 },
                 {
-                    "id": "fd_file_perturbated",
-                    "md5-reference": "2d3644dc6d190562ce7f57c71f383412"
+                    "id": "fd_file_perturbated"
                 },
                 {
-                    "id": "par_file_diff",
-                    "md5-reference": "09fa103dfcfa4afdca5769027fde5f95"
+                    "id": "par_file_diff"
                 },
                 {
-                    "id": "fd_file_diff",
-                    "md5-reference": "cd98ed06fc777d1f7cf2f6ccbddd7873"
+                    "id": "fd_file_diff"
                 }
                 ]
             }

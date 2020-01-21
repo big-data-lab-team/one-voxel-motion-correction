@@ -232,6 +232,7 @@ file_vol_model = [path_tmp 'vol_source_model.mnc'];
 file_vol_tmp = [path_tmp 'vol_source_tmp.mnc'];
 file_raw_tmp = [path_tmp 'vol_source_raw.dat'];
 file_xfm_tmp = [path_tmp 'vol_source_dxyz.xfm'];
+identity_xfm_tmp = [path_tmp 'identity.xfm'];
 hdr.file_name = file_vol;
 hdr.raw = file_raw_tmp;
 
@@ -256,9 +257,9 @@ for num_v = 1:nb_vol
     end
 
     %% Perform rigid-body coregistration
-    instr_minctracc = cat(2,'minctracc ',file_vol,' ',file_target,' ',file_xfm_tmp,' -xcorr  -source_mask ',file_mask_target,' -model_mask ',file_mask_target,' -forward -transformation identity.xfm -clobber -lsq6 -speckle 0 -est_center -tol ',num2str(opt.tol,7),' -',opt.interp,' -simplex 10 -model_lattice -step ',num2str(opt.step),' ',num2str(opt.step),' ',num2str(opt.step));
+    instr_minctracc = cat(2,'minctracc ',file_vol,' ',file_target,' ',file_xfm_tmp,' -xcorr  -source_mask ',file_mask_target,' -model_mask ',file_mask_target,' -forward -transformation ',identity_xfm_tmp,' -clobber -lsq6 -speckle 0 -est_center -tol ',num2str(opt.tol,7),' -',opt.interp,' -simplex 10 -model_lattice -step ',num2str(opt.step),' ',num2str(opt.step),' ',num2str(opt.step));
     if (num_v == 1)
-        [fail,msg] = system(cat(2,'param2xfm identity.xfm -translation 0 0 0 -rotations 0 0 0 -clobber'));
+      [fail,msg] = system(cat(2,'param2xfm ', identity_xfm_tmp, ' -translation 0 0 0 -rotations 0 0 0 -clobber'));
         if fail
             error('There was a problem with PARAM2XFM : %s',msg)
         end
