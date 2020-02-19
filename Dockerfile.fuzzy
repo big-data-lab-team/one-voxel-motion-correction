@@ -1,6 +1,6 @@
 from bigdatalabteam/one-voxel-motion-correction:latest
 
-ADD fuzzy-libs/libopenlibm.so fuzzy-libs/libinterflop_mca.so /lib
+ADD fuzzy-libs/libopenlibm.so fuzzy-libs/libinterflop_mca.so /lib/
 
 ENV LD_PRELOAD /lib/libopenlibm.so
 ENV VFC_BACKENDS "libinterflop_mca.so -p 16"
