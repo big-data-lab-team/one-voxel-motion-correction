@@ -34,6 +34,7 @@ def main(args=None):
         tdim = shape[3]
 
     data = im.get_data()
+    affine = im.affine
     margin = 15  # half the size of the bounding box to use to pick a voxel
     for t in range(0, tdim):
         x = xdim//2
@@ -59,8 +60,8 @@ def main(args=None):
         else:
             data[x][y][z][t] = new_value
 
-    im.to_filename(args.output_file)
-
+    im2 = nibabel.Nifti1Image(data, affine)
+    nibabel.save(im2, args.output_file)
 
 if __name__ == '__main__':
     main()
